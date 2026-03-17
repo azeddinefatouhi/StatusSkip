@@ -15,8 +15,8 @@ const CONFIG = {
   SHEET_NAME_PRO_USERS: 'Pro Users',
   FREE_LIMIT_PER_WEEK: 1,
   BRAND_NAME: 'StatusSkip',
-  BRAND_URL: 'https://statusskip.com',
-  UPGRADE_URL: 'https://statusskip.com/#pricing',
+  BRAND_URL: 'https://azeddinefatouhi.github.io/StatusSkip',
+  UPGRADE_URL: 'https://azeddinefatouhi.github.io/StatusSkip/index.html#pricing', // PayPal subscription page
 };
 
 // ================================================================
@@ -26,6 +26,19 @@ const CONFIG = {
 function doPost(e) {
   try {
     const raw = e.postData ? e.postData.contents : '{}';
+
+    // Detect PayPal IPN (form-encoded, not JSON)
+    const contentType = e.postData ? (e.postData.type || '') : '';
+    if (contentType.includes('application/x-www-form-urlencoded') || raw.includes('txn_type=') || raw.includes('payment_status=')) {
+      const ipnParams = {};
+      raw.split('&').forEach(pair => {
+        const [k, v] = pair.split('=');
+        if (k) ipnParams[decodeURIComponent(k)] = decodeURIComponent((v || '').replace(/\+/g, ' '));
+      });
+      handlePayPalIPN(ipnParams);
+      return jsonOut({ status: 'ipn_received' });
+    }
+
     const params = JSON.parse(raw);
 
     const { userName, userEmail, managerEmail, tasks, progress } = params;
@@ -105,6 +118,87 @@ function doGet() {
 }
     </pre>
   `);
+}
+
+
+// ================================================================
+// PAYPAL IPN HANDLER
+// ================================================================
+// PayPal will POST to this same web app URL when a subscription
+// is created or payment is received.
+// In your PayPal button form, set notify_url to this script's URL.
+
+function handlePayPalIPN(params) {
+  try {
+    const txnType  = params['txn_type']  || '';
+    const status   = params['payment_status'] || params['subscr_status'] || '';
+    const payerEmail = (params['payer_email'] || '').toLowerCase().trim();
+
+    // Accept new subscription or recurring payment
+    const isNew     = txnType === 'subscr_signup';
+    const isPaid    = txnType === 'subscr_payment' && status === 'Completed';
+
+    if ((isNew || isPaid) && payerEmail) {
+      // Try to find the StatusSkip email from custom field first,
+      // otherwise fall back to PayPal payer email
+      const customEmail = (params['custom'] || '').toLowerCase().trim();
+      const userEmail = customEmail || payerEmail;
+
+      markUserAsPro(userEmail, payerEmail);
+      console.log(`Pro activated for: ${userEmail} (PayPal: ${payerEmail})`);
+    }
+
+    // Handle cancellations
+    if (txnType === 'subscr_cancel' || txnType === 'subscr_eot') {
+      const customEmail = (params['custom'] || '').toLowerCase().trim();
+      const userEmail = customEmail || (params['payer_email'] || '').toLowerCase().trim();
+      if (userEmail) revokeProAccess(userEmail);
+    }
+
+  } catch (err) {
+    console.error('PayPal IPN error:', err.toString());
+  }
+}
+
+function markUserAsPro(userEmail, paypalEmail) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
+  if (!sheet) {
+    sheet = ss.insertSheet(CONFIG.SHEET_NAME_PRO_USERS);
+    sheet.appendRow(['Email', 'PayPal Email', 'Activated At', 'Status']);
+    sheet.setFrozenRows(1);
+  }
+  // Check if already exists
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if ((data[i][0] || '').toLowerCase() === userEmail) {
+      sheet.getRange(i + 1, 3).setValue(new Date().toISOString());
+      sheet.getRange(i + 1, 4).setValue('active');
+      return;
+    }
+  }
+  sheet.appendRow([userEmail, paypalEmail, new Date().toISOString(), 'active']);
+}
+
+function revokeProAccess(userEmail) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
+  if (!sheet) return;
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if ((data[i][0] || '').toLowerCase() === userEmail) {
+      sheet.getRange(i + 1, 4).setValue('cancelled');
+    }
+  }
+}
+
+// ── MANUAL PRO ACTIVATION (run this from Apps Script editor) ──
+// If automatic IPN fails, you can manually activate a user:
+// 1. Open Apps Script editor
+// 2. Run activateProManually('user@email.com')
+function activateProManually(email) {
+  markUserAsPro(email.toLowerCase().trim(), 'manual');
+  Logger.log('Activated Pro for: ' + email);
 }
 
 // ================================================================
