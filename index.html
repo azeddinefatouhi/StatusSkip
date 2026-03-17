@@ -434,7 +434,7 @@
   <p class="footer-copy">© 2026 StatusSkip</p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   document.querySelectorAll('.faq').forEach(faq => {
     faq.querySelector('.faq-q').addEventListener('click', () => {
       const isOpen = faq.classList.contains('open');
@@ -442,8 +442,22 @@
       if (!isOpen) faq.classList.add('open');
     });
   });
+
   const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity=1; e.target.style.transform='none'; } });
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = 1;
+        e.target.style.transform = 'none';
+      }
+    });
   }, { threshold: 0.08 });
+
   document.querySelectorAll('.step,.feat,.quote,.plan,.legend-item').forEach(el => {
-    el.style.opacity=0; el.st
+    el.style.opacity = 0;
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    obs.observe(el);
+  });
+</script>
+</body>
+</html>
