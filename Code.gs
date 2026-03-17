@@ -75,7 +75,7 @@ function doPost(e) {
 
     // --- Generate & send email ---
     const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail);
-    const subject = `✅ Weekly Update: ${cleanName} — ${getWeekString()}`;
+    const subject = `Weekly Update: ${cleanName} — ${getWeekString()}`;
 
     GmailApp.sendEmail(cleanManager, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
       htmlBody: html,
@@ -87,7 +87,7 @@ function doPost(e) {
     if (cleanUserEmail && isValidEmail(cleanUserEmail)) {
       GmailApp.sendEmail(
         cleanUserEmail,
-        `📬 Your status report was sent — ${CONFIG.BRAND_NAME}`,
+        `Your status report was sent — ${CONFIG.BRAND_NAME}`,
         '',
         { htmlBody: generateConfirmationHTML(cleanName, cleanManager), name: CONFIG.BRAND_NAME }
       );
@@ -106,7 +106,7 @@ function doPost(e) {
 
 function doGet() {
   return HtmlService.createHtmlOutput(`
-    <h2>✅ ${CONFIG.BRAND_NAME} API</h2>
+    <h2>${CONFIG.BRAND_NAME} API</h2>
     <p>POST JSON to this URL to send a status report.</p>
     <pre style="font-family:monospace;background:#f5f5f5;padding:16px;border-radius:8px;">
 {
@@ -218,7 +218,7 @@ function generateEmailHTML(name, tasks, progress, userEmail) {
           <div style="background:${c.bar};width:${pct}%;height:7px;border-radius:999px;"></div>
         </div>
         <div style="margin-top:6px;display:table;width:100%;">
-          <span style="display:table-cell;font-size:12px;color:${c.text};">${c.emoji} ${c.label}</span>
+          <span style="display:table-cell;font-size:12px;color:${c.text};">${c.label}</span>
           <span style="display:table-cell;text-align:right;font-size:12px;color:#6b7280;">${pct}%</span>
         </div>
       </div>
@@ -243,7 +243,7 @@ function generateEmailHTML(name, tasks, progress, userEmail) {
   <!-- HEADER -->
   <tr><td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:32px 36px;">
     <div style="font-size:10px;color:#64748b;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Weekly Status Report</div>
-    <div style="font-size:26px;font-weight:700;color:#ffffff;">📊 ${escHtml(name)}</div>
+    <div style="font-size:26px;font-weight:700;color:#ffffff;">${escHtml(name)}</div>
     <div style="font-size:13px;color:#475569;margin-top:6px;">${week}</div>
   </td></tr>
 
@@ -299,7 +299,6 @@ function generateConfirmationHTML(name, managerEmail) {
   return `<!DOCTYPE html>
 <html><body style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:40px auto;color:#1a1a2e;padding:24px;">
   <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:16px;padding:36px;text-align:center;margin-bottom:24px;">
-    <div style="font-size:48px;margin-bottom:12px;">📬</div>
     <h2 style="color:#fff;margin:0 0 8px;font-size:22px;">Report Sent!</h2>
     <p style="color:#64748b;margin:0;font-size:14px;">Your update is on its way</p>
   </div>
@@ -309,7 +308,7 @@ function generateConfirmationHTML(name, managerEmail) {
     <strong>${escHtml(managerEmail)}</strong>. 
     They can reply directly to this thread to respond to you.
   </p>
-  <p style="font-size:14px;color:#374151;line-height:1.7;">See you next week! ✅</p>
+  <p style="font-size:14px;color:#374151;line-height:1.7;">See you next week!</p>
   <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
   <p style="font-size:12px;color:#9ca3af;text-align:center;">
     Sent via <a href="${CONFIG.BRAND_URL}" style="color:#4f46e5;text-decoration:none;">${CONFIG.BRAND_NAME}</a>
@@ -366,7 +365,6 @@ function sendReminderEmail(userEmail) {
   const html = `<!DOCTYPE html>
 <html><body style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:40px auto;color:#1a1a2e;padding:24px;">
   <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:16px;padding:32px;text-align:center;margin-bottom:24px;">
-    <div style="font-size:40px;margin-bottom:10px;">📊</div>
     <h2 style="color:#fff;margin:0 0 6px;font-size:20px;">Time for your weekly update</h2>
     <p style="color:#64748b;margin:0;font-size:13px;">It takes 60 seconds</p>
   </div>
@@ -384,7 +382,7 @@ function sendReminderEmail(userEmail) {
   </p>
 </body></html>`;
 
-  GmailApp.sendEmail(userEmail, `⏰ Reminder: Send your weekly status report`, '', {
+  GmailApp.sendEmail(userEmail, `Reminder: Send your weekly status report`, '', {
     htmlBody: html,
     name: CONFIG.BRAND_NAME,
   });
@@ -457,9 +455,9 @@ function getOrCreateSheet(name) {
 }
 
 function getStatusColors(pct) {
-  if (pct >= 80) return { bar: '#16a34a', bg: '#e8f8f1', text: '#15803d', label: 'On Track', emoji: '✅' };
-  if (pct >= 50) return { bar: '#d97706', bg: '#fef3c7', text: '#b45309', label: 'In Progress', emoji: '⚡' };
-  return { bar: '#dc2626', bg: '#fee2e2', text: '#b91c1c', label: 'Behind', emoji: '⚠️' };
+  if (pct >= 80) return { bar: '#16a34a', bg: '#e8f8f1', text: '#15803d', label: 'On Track' };
+  if (pct >= 50) return { bar: '#d97706', bg: '#fef3c7', text: '#b45309', label: 'In Progress' };
+  return { bar: '#dc2626', bg: '#fee2e2', text: '#b91c1c', label: 'Behind' };
 }
 
 function getWeekString() {
