@@ -27,20 +27,54 @@ function doPost(e) {
   try {
     const raw = e.postData ? e.postData.contents : '{}';
 
-    // Detect PayPal IPN (form-encoded, not JSON)
+    // Detect form-encoded POST (from no-cors fetch or PayPal IPN)
     const contentType = e.postData ? (e.postData.type || '') : '';
-    if (contentType.includes('application/x-www-form-urlencoded') || raw.includes('txn_type=') || raw.includes('payment_status=')) {
-      const ipnParams = {};
+    const isFormEncoded = contentType.includes('application/x-www-form-urlencoded') ||
+                          (raw.includes('=') && raw.includes('&') && !raw.startsWith('{'));
+
+    if (isFormEncoded) {
+      const formParams = {};
       raw.split('&').forEach(pair => {
-        const [k, v] = pair.split('=');
-        if (k) ipnParams[decodeURIComponent(k)] = decodeURIComponent((v || '').replace(/\+/g, ' '));
+        const eqIdx = pair.indexOf('=');
+        if (eqIdx > -1) {
+          const k = decodeURIComponent(pair.substring(0, eqIdx));
+          const v = decodeURIComponent(pair.substring(eqIdx + 1).replace(/\+/g, ' '));
+          formParams[k] = v;
+        }
       });
-      handlePayPalIPN(ipnParams);
-      return jsonOut({ status: 'ipn_received' });
+
+      // PayPal IPN
+      if (formParams['txn_type'] || formParams['payment_status']) {
+        handlePayPalIPN(formParams);
+        return jsonOut({ status: 'ipn_received' });
+      }
+
+      // StatusSkip submission via no-cors form encoding
+      if (formParams['userName'] || formParams['managerEmail']) {
+        try {
+          formParams.tasks = JSON.parse(formParams.tasks || '[]');
+          formParams.progress = JSON.parse(formParams.progress || '[]');
+        } catch(e) {
+          formParams.tasks = [];
+          formParams.progress = [];
+        }
+        // Re-enter doPost logic with parsed params
+        return processReport(formParams);
+      }
     }
 
     const params = JSON.parse(raw);
 
+    return processReport(params);
+
+  } catch (error) {
+    console.error('doPost error:', error.toString());
+    return err(error.toString());
+  }
+}
+
+function processReport(params) {
+  try {
     const { userName, userEmail, managerEmail, tasks, progress } = params;
 
     // --- Validate ---
@@ -99,7 +133,7 @@ function doPost(e) {
     return jsonOut({ status: 'success', message: 'Email sent successfully!' });
 
   } catch (error) {
-    console.error('doPost error:', error.toString());
+    console.error('processReport error:', error.toString());
     return err(error.toString());
   }
 }

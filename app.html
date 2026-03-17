@@ -643,21 +643,24 @@
 
       // If Apps Script URL is configured, send for real
       if (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+        // Apps Script doesn't support CORS from external domains.
+        // We use no-cors mode — the request is sent but the response is opaque.
+        // The email will be sent server-side regardless.
+        const params = new URLSearchParams({
+          userName: payload.userName,
+          userEmail: payload.userEmail || '',
+          managerEmail: payload.managerEmail,
+          tasks: JSON.stringify(payload.tasks),
+          progress: JSON.stringify(payload.progress),
         });
-        const data = await res.json();
-        if (data.status === 'limit_reached') {
-          overlay.classList.remove('show');
-          clearInterval(msgTimer);
-          if (confirm('You\'ve used your free report this week.\n\nUpgrade to Pro for $7/month via PayPal — unlimited reports, reminders, and more.\n\nClick OK to go to the upgrade page.')) {
-            window.open('https://azeddinefatouhi.github.io/StatusSkip/index.html#pricing', '_blank');
-          }
-          return;
-        }
-        if (data.status !== 'success') throw new Error(data.message || 'Send failed');
+
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+        // no-cors gives an opaque response — if no exception was thrown, it was sent
         sent = true;
       } else {
         // DEMO MODE: simulate a delay
