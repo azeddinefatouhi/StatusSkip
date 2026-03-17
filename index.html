@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StatusSkip — Send Your Weekly Status Report in 60 Seconds</title>
+  <meta name="description" content="Stop wasting 2+ hours writing weekly status updates. Enter 3 tasks, drag sliders, click send. Professional HTML email to your manager instantly.">
+  <meta property="og:title" content="StatusSkip — Weekly Status Reports in 60 Seconds">
+  <meta property="og:description" content="Turn 3 tasks + sliders into a professional status email. Free forever.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23d4f564'/><path d='M8 22V14M13 22V10M18 22V17M23 22V12' stroke='%230c0c0f' stroke-width='2.5' stroke-linecap='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0c0c0f; --bg2: #111115; --bg3: #18181d;
+      --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+      --text: #f0f0f2; --text2: #9090a0; --text3: #55555f;
+      --accent: #d4f564; --accent2: #b8e040;
+      --green: #4ade80; --amber: #fbbf24; --red: #f87171;
+      --radius: 16px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; height: 60px; background: rgba(12,12,15,0.9); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+    .logo { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-link { font-size: 14px; color: var(--text2); text-decoration: none; transition: color .2s; }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { font-size: 13px; font-weight: 600; padding: 8px 20px; background: var(--accent); color: #0c0c0f; border-radius: 8px; text-decoration: none; transition: background .15s, transform .15s; }
+    .btn-nav:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+    .hero-grid { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent); }
+    .hero-glow { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(212,245,100,0.06) 0%, transparent 70%); z-index: 0; }
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border2); border-radius: 999px; padding: 5px 14px 5px 8px; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 36px; background: rgba(255,255,255,0.03); animation: up .6s ease both; }
+    .live-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    h1 { font-family: 'Instrument Serif', serif; font-size: clamp(44px, 6.5vw, 88px); font-weight: 400; line-height: 1.0; letter-spacing: -1px; color: var(--text); max-width: 820px; animation: up .6s .1s ease both; }
+    h1 em { font-style: italic; color: var(--accent); }
+    h1 .cross { position: relative; color: var(--text3); display: inline-block; }
+    h1 .cross::after { content: ''; position: absolute; top: 50%; left: -2%; width: 104%; height: 2px; background: var(--red); transform: rotate(-1.5deg); }
+
+    .hero-sub { font-size: 18px; color: var(--text2); max-width: 480px; margin: 24px auto 0; font-weight: 300; line-height: 1.7; animation: up .6s .2s ease both; }
+    .hero-cta { margin-top: 44px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; animation: up .6s .3s ease both; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #0c0c0f; font-weight: 700; font-size: 15px; padding: 15px 32px; border-radius: 12px; text-decoration: none; border: none; cursor: pointer; transition: background .15s, transform .15s, box-shadow .15s; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212,245,100,0.2); }
+    .btn-ghost { font-size: 14px; color: var(--text2); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .2s; }
+    .btn-ghost:hover { color: var(--text); }
+    .hero-note { font-size: 12px; color: var(--text3); margin-top: 16px; animation: up .6s .4s ease both; }
+    @keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+    /* EMAIL PREVIEW */
+    .preview-wrap { margin-top: 72px; width: 100%; max-width: 520px; animation: up .7s .5s ease both; }
+    .preview-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); font-weight: 500; margin-bottom: 12px; text-align: left; }
+    .email-card { background: #16161b; border: 1px solid var(--border2); border-radius: 20px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04); }
+    .ec-bar { background: #1e1e24; padding: 12px 18px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .ec-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .ec-subject { font-size: 12px; color: var(--text3); margin-left: 8px; }
+    .ec-header { background: linear-gradient(135deg, #1a2744 0%, #0d1f3c 100%); padding: 24px 28px; }
+    .ec-eyebrow { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #4a6a9a; margin-bottom: 6px; }
+    .ec-name { font-family: 'Instrument Serif', serif; font-size: 22px; color: #e8f0fe; }
+    .ec-week { font-size: 12px; color: #3a5070; margin-top: 4px; }
+    .ec-body { padding: 20px 28px; }
+    .ec-task { border-radius: 8px; border-left: 4px solid; padding: 12px 14px; margin-bottom: 10px; }
+    .ec-task-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; }
+    .ec-bar-track { background: rgba(255,255,255,0.08); border-radius: 999px; height: 6px; overflow: hidden; }
+    .ec-bar-fill { height: 100%; border-radius: 999px; }
+    .ec-task-meta { font-size: 11px; color: var(--text3); margin-top: 5px; display: flex; justify-content: space-between; }
+    .ec-summary { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; margin-top: 4px; display: flex; justify-content: space-around; text-align: center; border: 1px solid var(--border); }
+    .ec-stat-val { font-family: 'Instrument Serif', serif; font-size: 26px; color: var(--text); }
+    .ec-stat-label { font-size: 10px; color: var(--text3); margin-top: 2px; letter-spacing: .5px; }
+
+    /* STATS */
+    .stats { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 56px 40px; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Instrument Serif', serif; font-size: 52px; color: var(--text); line-height: 1; }
+    .stat-num span { color: var(--accent); }
+    .stat-label { font-size: 13px; color: var(--text3); margin-top: 6px; }
+
+    /* SECTIONS */
+    section { padding: 100px 24px; }
+    .inner { max-width: 1080px; margin: 0 auto; }
+    .section-tag { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+    h2 { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 400; color: var(--text); line-height: 1.1; }
+    .section-sub { font-size: 16px; color: var(--text2); margin-top: 12px; max-width: 480px; line-height: 1.7; }
+
+    /* HOW IT WORKS */
+    #how { background: var(--bg2); }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 60px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .step { background: var(--bg2); padding: 40px 36px; border-right: 1px solid var(--border); transition: background .2s; }
+    .step:last-child { border-right: none; }
+    .step:hover { background: var(--bg3); }
+    .step-num { font-family: 'Instrument Serif', serif; font-size: 48px; color: var(--border2); line-height: 1; margin-bottom: 20px; }
+    .step h3 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .step p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+    .step-tag { font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 1px; margin-top: 18px; }
+
+    /* FEATURES */
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 60px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .feat { background: var(--bg); padding: 36px 32px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .feat:nth-child(3n) { border-right: none; }
+    .feat-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(212,245,100,0.08); border: 1px solid rgba(212,245,100,0.15); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 20px; }
+    .feat h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .feat p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+    /* PREVIEW SECTION */
+    #preview { background: var(--bg2); }
+    .preview-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-top: 60px; }
+    .color-legend { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; }
+    .legend-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); }
+    .legend-bar { width: 5px; height: 36px; border-radius: 3px; flex-shrink: 0; }
+    .legend-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .legend-range { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+    /* PRICING */
+    .pricing-wrap { display: flex; gap: 24px; margin-top: 60px; flex-wrap: wrap; max-width: 680px; }
+    .plan { flex: 1; min-width: 280px; border: 1px solid var(--border); border-radius: var(--radius); padding: 40px 36px; background: var(--bg2); }
+    .plan.featured { border-color: var(--accent); background: linear-gradient(135deg, rgba(212,245,100,0.05) 0%, var(--bg2) 50%); position: relative; overflow: hidden; }
+    .plan.featured::before { content: 'Most Popular'; position: absolute; top: 20px; right: -28px; background: var(--accent); color: #0c0c0f; font-size: 11px; font-weight: 700; padding: 4px 36px; transform: rotate(45deg); letter-spacing: 1px; }
+    .plan-tier { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); }
+    .plan-price { font-family: 'Instrument Serif', serif; font-size: 60px; color: var(--text); line-height: 1; margin: 16px 0; }
+    .plan-price sub { font-size: 20px; font-style: normal; color: var(--text2); }
+    .plan-price sup { font-size: 24px; }
+    .plan-desc { font-size: 14px; color: var(--text2); margin-bottom: 28px; }
+    .plan-features { list-style: none; margin-bottom: 32px; }
+    .plan-features li { font-size: 14px; color: var(--text2); padding: 9px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .plan-features li::before { content: '—'; color: var(--text3); font-size: 12px; flex-shrink: 0; }
+    .plan-features li.yes::before { content: ''; display:inline-block; width:14px; height:14px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234ade80' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E"); background-size:contain; background-repeat:no-repeat; vertical-align:middle; }
+    .plan-features li.no { opacity: .4; }
+    .btn-plan { display: block; text-align: center; padding: 14px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; cursor: pointer; border: none; transition: transform .15s, box-shadow .15s; }
+    .btn-plan:hover { transform: translateY(-2px); }
+    .plan .btn-plan { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
+    .plan.featured .btn-plan { background: var(--accent); color: #0c0c0f; }
+
+    /* TESTIMONIALS */
+    #social { background: var(--bg2); }
+    .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 52px; }
+    .quote { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: border-color .2s; }
+    .quote:hover { border-color: var(--border2); }
+    .quote-stars { color: var(--accent); font-size: 13px; margin-bottom: 14px; letter-spacing: 2px; }
+    .quote-text { font-size: 15px; line-height: 1.7; color: var(--text2); }
+    .quote-author { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+    .quote-av { width: 36px; height: 36px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .quote-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .quote-role { font-size: 12px; color: var(--text3); }
+
+    /* FAQ */
+    .faqs { margin-top: 52px; max-width: 680px; }
+    .faq { border-bottom: 1px solid var(--border); padding: 20px 0; cursor: pointer; }
+    .faq-q { font-size: 15px; font-weight: 500; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 16px; user-select: none; }
+    .faq-q::after { content: '+'; color: var(--text3); font-size: 20px; flex-shrink: 0; transition: transform .2s; }
+    .faq.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a { font-size: 14px; color: var(--text2); line-height: 1.7; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .2s; }
+    .faq.open .faq-a { max-height: 200px; padding-top: 12px; }
+
+    /* CTA */
+    .cta-section { text-align: center; padding: 120px 24px; background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,245,100,0.05) 0%, transparent 70%); border-top: 1px solid var(--border); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 36px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--text3); text-decoration: none; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--text3); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text2); }
+    .footer-copy { font-size: 12px; color: var(--text3); }
+
+    @media (max-width: 900px) {
+      .steps, .features-grid, .quotes { grid-template-columns: 1fr; }
+      .step { border-right: none; border-bottom: 1px solid var(--border); }
+      .feat { border-right: none; }
+      .preview-2col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-link { display: none; }
+      .stats { gap: 40px; padding: 48px 24px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#"><span class="logo-dot"></span>StatusSkip</a>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="app.html" class="btn-nav">Try Free →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span class="live-dot"></span>Saves 2+ hours every week</div>
+  <h1>Stop <span class="cross">writing</span><br>status reports.<br><em>Send them in 60s.</em></h1>
+  <p class="hero-sub">3 tasks. 3 sliders. One click. StatusSkip turns your weekly progress into a beautiful email your manager will actually read.</p>
+  <div class="hero-cta">
+    <a href="app.html" class="btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Send Your First Report Free</a>
+    <a href="#how" class="btn-ghost">See how it works →</a>
+  </div>
+  <p class="hero-note">Free forever · No account needed · Works with any email</p>
+  <div class="preview-wrap">
+    <p class="preview-label">↓ What your manager receives</p>
+    <div class="email-card">
+      <div class="ec-bar">
+        <span class="ec-dot" style="background:#ff5f57"></span>
+        <span class="ec-dot" style="background:#febc2e"></span>
+        <span class="ec-dot" style="background:#28c840"></span>
+        <span class="ec-subject"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:#4ade80;margin-right:4px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Weekly Update: Alex Johnson — Mar 17–21</span>
+      </div>
+      <div class="ec-header">
+        <div class="ec-eyebrow">Weekly Status Report</div>
+        <div class="ec-name"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:#818cf8;margin-right:6px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>Alex Johnson</div>
+        <div class="ec-week">Week of Mar 17–21, 2026</div>
+      </div>
+      <div class="ec-body">
+        <div class="ec-task" style="background:rgba(74,222,128,0.06);border-color:#4ade80;">
+          <div class="ec-task-name">Launch new landing page</div>
+          <div class="ec-bar-track"><div class="ec-bar-fill" style="width:92%;background:#4ade80;"></div></div>
+          <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#4ade80;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>On Track</span><span>92%</span></div>
+        </div>
+        <div class="ec-task" style="background:rgba(251,191,36,0.06);border-color:#fbbf24;">
+          <div class="ec-task-name">Integrate Stripe payments</div>
+          <div class="ec-bar-track"><div class="ec-bar-fill" style="width:65%;background:#fbbf24;"></div></div>
+          <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#fbbf24;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>In Progress</span><span>65%</span></div>
+        </div>
+        <div class="ec-task" style="background:rgba(248,113,113,0.06);border-color:#f87171;">
+          <div class="ec-task-name">Write API documentation</div>
+          <div class="ec-bar-track"><div class="ec-bar-fill" style="width:28%;background:#f87171;"></div></div>
+          <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#f87171;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Behind</span><span>28%</span></div>
+        </div>
+        <div class="ec-summary">
+          <div><div class="ec-stat-val">62%</div><div class="ec-stat-label">AVG PROGRESS</div></div>
+          <div style="border-left:1px solid rgba(255,255,255,0.06)"><div class="ec-stat-val" style="color:#4ade80;">1</div><div class="ec-stat-label">ON TRACK</div></div>
+          <div style="border-left:1px solid rgba(255,255,255,0.06)"><div class="ec-stat-val" style="color:#f87171;">1</div><div class="ec-stat-label">NEEDS ATTENTION</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">2.3<span>h</span></div><div class="stat-label">saved per week, per person</div></div>
+  <div class="stat"><div class="stat-num">60<span>s</span></div><div class="stat-label">to send a full report</div></div>
+  <div class="stat"><div class="stat-num">70<span>%</span></div><div class="stat-label">of remote workers hate writing them</div></div>
+  <div class="stat"><div class="stat-num">$0</div><div class="stat-label">to get started, forever</div></div>
+</div>
+
+<section id="how">
+  <div class="inner">
+    <div class="section-tag">How it works</div>
+    <h2>Three steps.<br>That's genuinely it.</h2>
+    <p class="section-sub">No project management tool. No Slack bot. No onboarding. Just a form and a send button.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Enter your tasks</h3>
+        <p>Type up to 3 tasks you worked on this week. Each gets a progress slider from 0–100%. Takes about 30 seconds.</p>
+        <div class="step-tag">~30 SECONDS</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Preview in real time</h3>
+        <p>Watch your email take shape as you type. Color-coded bars, summary row, formatted subject line — all auto-generated.</p>
+        <div class="step-tag">~15 SECONDS</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Click Send</h3>
+        <p>StatusSkip delivers the HTML email directly to your manager's inbox. A confirmation copy lands in yours. Done for the week.</p>
+        <div class="step-tag">~5 SECONDS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="inner">
+    <div class="section-tag">Features</div>
+    <h2>Everything you need.<br>Nothing you don't.</h2>
+    <div class="features-grid">
+      <div class="feat"><div class="feat-icon" style="color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div><h3>Color-coded progress bars</h3><p>Green for on track, amber for in progress, red for behind. Managers read the whole report at a glance without reading a word.</p></div>
+      <div class="feat"><div class="feat-icon" style="color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>Live email preview</h3><p>The right panel shows exactly what your manager will receive, updating in real time as you fill the form. No surprises.</p></div>
+      <div class="feat"><div class="feat-icon" style="color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div><h3>Instant delivery</h3><p>Report is generated and sent in under 5 seconds. Your manager gets a proper HTML email, not a Google Form link.</p></div>
+      <div class="feat"><div class="feat-icon" style="color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></div><h3>Auto-summary row</h3><p>Every report includes an at-a-glance summary: average progress, tasks on track, and tasks that need attention.</p></div>
+      <div class="feat"><div class="feat-icon" style="color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><h3>Pre-fill via URL</h3><p>Bookmark a URL with your name and manager's email pre-filled. Open it, update tasks, send. Weekly ritual in under a minute.</p></div>
+      <div class="feat"><div class="feat-icon" style="color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Zero account needed</h3><p>No password, no signup, no onboarding. Open the form, fill it in, send. First one is free, no card required.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="preview">
+  <div class="inner">
+    <div class="preview-2col">
+      <div>
+        <div class="section-tag">Email design</div>
+        <h2>Managers read it.<br>Not just skim it.</h2>
+        <p class="section-sub">The output is designed for the receiver. Scannable, color-coded, and mobile-friendly from day one.</p>
+        <div class="color-legend">
+          <div class="legend-item"><div class="legend-bar" style="background:#4ade80;"></div><div><div class="legend-label" style="display:flex;align-items:center;gap:6px;color:#4ade80;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>On Track</div><div class="legend-range">80–100% — progressing well, no action needed</div></div></div>
+          <div class="legend-item"><div class="legend-bar" style="background:#fbbf24;"></div><div><div class="legend-label" style="display:flex;align-items:center;gap:6px;color:#fbbf24;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>In Progress</div><div class="legend-range">50–79% — active work, may need a check-in</div></div></div>
+          <div class="legend-item"><div class="legend-bar" style="background:#f87171;"></div><div><div class="legend-label" style="display:flex;align-items:center;gap:6px;color:#f87171;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Behind</div><div class="legend-range">0–49% — blocked or behind, attention needed</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="email-card">
+          <div class="ec-header">
+            <div class="ec-eyebrow">Weekly Status Report</div>
+            <div class="ec-name"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:#818cf8;margin-right:6px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>Sarah Chen</div>
+            <div class="ec-week">Week of Mar 17–21, 2026</div>
+          </div>
+          <div class="ec-body">
+            <div class="ec-task" style="background:rgba(74,222,128,0.06);border-color:#4ade80;"><div class="ec-task-name">Client onboarding redesign</div><div class="ec-bar-track"><div class="ec-bar-fill" style="width:85%;background:#4ade80;"></div></div><div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#4ade80;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>On Track</span><span>85%</span></div></div>
+            <div class="ec-task" style="background:rgba(251,191,36,0.06);border-color:#fbbf24;"><div class="ec-task-name">Q2 roadmap planning</div><div class="ec-bar-track"><div class="ec-bar-fill" style="width:55%;background:#fbbf24;"></div></div><div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#fbbf24;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>In Progress</span><span>55%</span></div></div>
+            <div class="ec-summary">
+              <div><div class="ec-stat-val">70%</div><div class="ec-stat-label">AVG</div></div>
+              <div style="border-left:1px solid rgba(255,255,255,0.06)"><div class="ec-stat-val" style="color:#4ade80;">1</div><div class="ec-stat-label">ON TRACK</div></div>
+              <div style="border-left:1px solid rgba(255,255,255,0.06)"><div class="ec-stat-val" style="color:#f87171;">0</div><div class="ec-stat-label">BLOCKED</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="inner">
+    <div class="section-tag">Pricing</div>
+    <h2>Simple. Honest.<br>Starts free.</h2>
+    <p class="section-sub">No credit card required to start. Upgrade via PayPal — cancel anytime.</p>
+    <div class="pricing-wrap">
+      <div class="plan">
+        <div class="plan-tier">Free</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-desc">For occasional reporters</div>
+        <ul class="plan-features">
+          <li class="yes">1 report per week</li>
+          <li class="yes">Standard email template</li>
+          <li class="yes">Live preview</li>
+          <li class="yes">Confirmation copy to self</li>
+          <li class="no">Multiple manager emails</li>
+          <li class="no">Pro templates</li>
+          <li class="no">Weekly reminder emails</li>
+          <li class="no">Remove StatusSkip footer</li>
+        </ul>
+        <a href="app.html" class="btn-plan">Start Free →</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-tier">Pro</div>
+        <div class="plan-price"><sup>$</sup>7<sub>/mo</sub></div>
+        <div class="plan-desc">For freelancers &amp; power users</div>
+        <ul class="plan-features">
+          <li class="yes">Unlimited reports</li>
+          <li class="yes">Standard email template</li>
+          <li class="yes">Live preview</li>
+          <li class="yes">Confirmation copy to self</li>
+          <li class="yes">Multiple manager emails</li>
+          <li class="yes">Executive + Freelancer templates</li>
+          <li class="yes">Weekly reminder emails</li>
+          <li class="yes">Remove StatusSkip footer</li>
+        </ul>
+        <div id="paypal-pro-btn">
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+          <input type="hidden" name="cmd" value="_xclick-subscriptions">
+          <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL_HERE">
+          <input type="hidden" name="item_name" value="StatusSkip Pro">
+          <input type="hidden" name="a3" value="7.00">
+          <input type="hidden" name="p3" value="1">
+          <input type="hidden" name="t3" value="M">
+          <input type="hidden" name="src" value="1">
+          <input type="hidden" name="currency_code" value="USD">
+          <input type="hidden" name="notify_url" value="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID_HERE/exec">
+          <input type="hidden" name="return" value="https://statusskip.com/app.html?plan=pro&paid=1">
+          <input type="hidden" name="cancel_return" value="https://statusskip.com/#pricing">
+          <button type="submit" class="btn-plan" style="width:100%;cursor:pointer;">
+            Upgrade to Pro — $7/mo
+          </button>
+        </form>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="social">
+  <div class="inner">
+    <div class="section-tag">Early feedback</div>
+    <h2>What beta users say</h2>
+    <div class="quotes">
+      <div class="quote"><div class="quote-stars" style="display:flex;gap:3px;color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><p class="quote-text">"I manage 8 freelancers. Since they started using this, my Monday morning is completely different. I can see who's blocked before I even open Slack."</p><div class="quote-author"><div class="quote-av" style="color:var(--text2);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><div><div class="quote-name">Maya R.</div><div class="quote-role">Head of Product, Series A startup</div></div></div></div>
+      <div class="quote"><div class="quote-stars" style="display:flex;gap:3px;color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><p class="quote-text">"I have 5 clients that all want weekly updates. This saves me at least 3 hours every Friday. Honestly embarrassed I didn't build this myself."</p><div class="quote-author"><div class="quote-av" style="color:var(--text2);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><div><div class="quote-name">James K.</div><div class="quote-role">Freelance developer</div></div></div></div>
+      <div class="quote"><div class="quote-stars" style="display:flex;gap:3px;color:var(--accent);"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><p class="quote-text">"My manager said my updates are the best formatted ones she gets. I didn't tell her they take me 45 seconds to write now."</p><div class="quote-author"><div class="quote-av" style="color:var(--text2);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></div><div><div class="quote-name">Priya S.</div><div class="quote-role">UX designer, remote team</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="inner">
+    <div class="section-tag">FAQ</div>
+    <h2>Questions</h2>
+    <div class="faqs">
+      <div class="faq"><div class="faq-q">Does this work without a Gmail account?</div><div class="faq-a">Yes. The form works from any browser. Email is sent via the StatusSkip backend — your manager replies to your own email address. No account connection needed.</div></div>
+      <div class="faq"><div class="faq-q">Is my data stored anywhere?</div><div class="faq-a">Submission data (name, email addresses, task text) is logged to a private Google Sheet for quota management. It is never sold or shared. See our privacy policy for full details.</div></div>
+      <div class="faq"><div class="faq-q">Will this land in spam?</div><div class="faq-a">Unlikely, but possible on the first send. We recommend your manager adds the sending address to contacts. The email content uses clean HTML with no spammy patterns.</div></div>
+      <div class="faq"><div class="faq-q">Can I customize the email template?</div><div class="faq-a">Pro users get three templates: Standard, Executive Brief (minimal, corporate-friendly), and Freelancer Client (adds project name, replaces "Manager" with "Client").</div></div>
+      <div class="faq"><div class="faq-q">How does payment work?</div><div class="faq-a">Pro is $7/month billed via PayPal. You don't need a credit card — PayPal balance or bank transfer works. After payment, reply to your PayPal receipt with the email you use on StatusSkip and we'll activate Pro within 24 hours. Automated activation coming soon.</div></div>
+      <div class="faq"><div class="faq-q">What if I have more than 3 tasks?</div><div class="faq-a">The MVP supports up to 3 tasks per report. This is intentional — good status reports are concise. Pick your top 3 priorities. Multi-task support is on the Pro roadmap.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <div class="section-tag" style="text-align:center;">Get started</div>
+  <h2>Your manager is waiting<br>for a decent update.</h2>
+  <p class="section-sub" style="margin:16px auto 0;text-align:center;">60 seconds. First one's free. No account, no install.</p>
+  <div class="hero-cta" style="margin-top:40px;"><a href="app.html" class="btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Send Your First Report Free</a></div>
+  <p class="hero-note" style="margin-top:16px;">Free forever · Pay with PayPal · Works with any inbox</p>
+</div>
+
+<footer>
+  <a class="footer-logo" href="#">StatusSkip</a>
+  <div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a></div>
+  <p class="footer-copy">© 2026 StatusSkip</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  document.querySelectorAll('.faq').forEach(faq => {
+    faq.querySelector('.faq-q').addEventListener('click', () => {
+      const isOpen = faq.classList.contains('open');
+      document.querySelectorAll('.faq').forEach(f => f.classList.remove('open'));
+      if (!isOpen) faq.classList.add('open');
+    });
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity=1; e.target.style.transform='none'; } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.step,.feat,.quote,.plan,.legend-item').forEach(el => {
+    el.style.opacity=0; el.st

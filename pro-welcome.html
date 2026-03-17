@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Pro — StatusSkip</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23d4f564'/><path d='M8 22V14M13 22V10M18 22V17M23 22V12' stroke='%230c0c0f' stroke-width='2.5' stroke-linecap='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0c0c0f; --bg2: #111115; --bg3: #18181d;
+      --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+      --text: #f0f0f2; --text2: #9090a0; --text3: #55555f;
+      --accent: #d4f564; --accent2: #b8e040; --green: #4ade80;
+    }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; min-height: 100vh; display: flex; flex-direction: column; }
+    nav { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--border); background: rgba(12,12,15,0.95); }
+    .logo { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 7px; }
+    .logo-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+    main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(212,245,100,0.08); border: 1px solid rgba(212,245,100,0.2); border-radius: 999px; padding: 5px 16px 5px 10px; font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 28px; }
+    .badge-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    h1 { font-family: 'Instrument Serif', serif; font-size: clamp(36px, 6vw, 64px); font-weight: 400; color: var(--text); line-height: 1.05; margin-bottom: 16px; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .sub { font-size: 17px; color: var(--text2); max-width: 440px; font-weight: 300; line-height: 1.7; margin-bottom: 48px; }
+    /* Steps */
+    .steps-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 680px; width: 100%; margin-bottom: 48px; }
+    .step-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; text-align: left; }
+    .step-num { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--border2); line-height: 1; margin-bottom: 12px; }
+    .step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .step-desc { font-size: 13px; color: var(--text3); line-height: 1.5; }
+    /* CTA */
+    .cta-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #0c0c0f; font-weight: 700; font-size: 15px; padding: 15px 36px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-primary svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .support-note { font-size: 13px; color: var(--text3); }
+    .support-note a { color: var(--text2); text-decoration: none; transition: color .2s; }
+    .support-note a:hover { color: var(--text); }
+    /* Manual activation notice */
+    .notice { max-width: 540px; background: var(--bg2); border: 1px solid rgba(212,245,100,0.15); border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; text-align: left; }
+    .notice-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 8px; letter-spacing: .5px; text-transform: uppercase; }
+    .notice-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
+    .notice-body a { color: var(--accent); text-decoration: none; }
+    footer { border-top: 1px solid var(--border); padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: 'Instrument Serif', serif; font-size: 17px; color: var(--text3); text-decoration: none; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--text3); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text2); }
+    .footer-copy { font-size: 12px; color: var(--text3); }
+    @media (max-width: 640px) { nav { padding: 0 20px; } .steps-wrap { grid-template-columns: 1fr; } footer { flex-direction: column; text-align: center; padding: 24px 20px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html"><span class="logo-dot"></span>StatusSkip</a>
+</nav>
+
+<main>
+  <div class="badge"><span class="badge-dot"></span>Pro activated</div>
+  <h1>You're in.<br><em>Welcome to Pro.</em></h1>
+  <p class="sub">Your payment was received. You now have unlimited reports, all templates, and weekly reminders. Here's how to get started.</p>
+
+  <div class="notice">
+    <div class="notice-title">Action required — activate your account</div>
+    <div class="notice-body">
+      To link your PayPal payment to your StatusSkip account, reply to your PayPal receipt email and include the email address you use when submitting reports. Alternatively, email <a href="mailto:billing@statusskip.com">billing@statusskip.com</a> with both emails. We activate manually within a few hours.
+    </div>
+  </div>
+
+  <div class="steps-wrap">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-title">Email us your address</div>
+      <div class="step-desc">Send your StatusSkip email to billing@statusskip.com so we can activate your Pro access.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-title">Get confirmed</div>
+      <div class="step-desc">We'll reply within a few hours confirming your Pro account is live. No waiting days.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-title">Send unlimited reports</div>
+      <div class="step-desc">Open the app, send as many reports as you need. No weekly limit, all templates available.</div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <a href="app.html" class="btn-primary">
+      <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      Open StatusSkip
+    </a>
+    <p class="support-note">Questions? <a href="mailto:billing@statusskip.com">billing@statusskip.com</a> — we reply fast.</p>
+  </div>
+</main>
+
+<footer>
+  <a class="footer-logo" href="index.html">StatusSkip</a>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <p class="footer-copy">© 2026 StatusSkip</p>
+</footer>
+
+</body>
+</html>

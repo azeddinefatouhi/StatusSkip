@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — StatusSkip</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23d4f564'/><path d='M8 22V14M13 22V10M18 22V17M23 22V12' stroke='%230c0c0f' stroke-width='2.5' stroke-linecap='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0c0c0f; --bg2: #111115; --bg3: #18181d;
+      --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+      --text: #f0f0f2; --text2: #9090a0; --text3: #55555f;
+      --accent: #d4f564; --accent2: #b8e040; --green: #4ade80;
+    }
+    body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    nav { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--border); background: rgba(12,12,15,0.95); position: sticky; top: 0; z-index: 10; }
+    .logo { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 7px; }
+    .logo-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+    nav a.back { font-size: 13px; color: var(--text3); text-decoration: none; transition: color .2s; }
+    nav a.back:hover { color: var(--text2); }
+    .page { max-width: 720px; margin: 0 auto; padding: 72px 24px 120px; }
+    .page-tag { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    h1 { font-family: 'Instrument Serif', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 400; color: var(--text); line-height: 1.1; margin-bottom: 12px; }
+    .subtitle { font-size: 17px; color: var(--text2); margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--border); font-weight: 300; line-height: 1.6; }
+    /* Contact cards */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 56px; }
+    .contact-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 28px; transition: border-color .2s; }
+    .contact-card:hover { border-color: var(--border2); }
+    .card-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(212,245,100,0.08); border: 1px solid rgba(212,245,100,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .card-icon svg { width: 18px; height: 18px; color: var(--accent); stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .card-desc { font-size: 13px; color: var(--text3); margin-bottom: 16px; line-height: 1.5; }
+    .card-link { font-size: 14px; color: var(--accent); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; transition: color .2s; }
+    .card-link:hover { color: var(--accent2); }
+    /* Response time */
+    .response-note { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 48px; display: flex; align-items: center; gap: 16px; }
+    .response-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .response-text { font-size: 14px; color: var(--text2); }
+    .response-text strong { color: var(--text); }
+    /* FAQ mini */
+    h2 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 24px; }
+    .mini-faq { border-top: 1px solid var(--border); }
+    .mini-faq-item { border-bottom: 1px solid var(--border); padding: 18px 0; }
+    .mini-faq-q { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .mini-faq-a { font-size: 14px; color: var(--text2); line-height: 1.6; }
+    .mini-faq-a a { color: var(--accent); text-decoration: none; }
+    footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--text3); text-decoration: none; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--text3); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text2); }
+    .footer-copy { font-size: 12px; color: var(--text3); }
+    @media (max-width: 600px) { nav { padding: 0 20px; } .contact-grid { grid-template-columns: 1fr; } footer { padding: 24px 20px; flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html"><span class="logo-dot"></span>StatusSkip</a>
+  <a class="back" href="index.html">← Back to home</a>
+</nav>
+
+<div class="page">
+  <div class="page-tag">Contact</div>
+  <h1>Get in touch.</h1>
+  <p class="subtitle">We're a small team. You'll get a real reply from a real person, usually within 24 hours on business days.</p>
+
+  <div class="response-note">
+    <span class="response-dot"></span>
+    <span class="response-text"><strong>Typical response time: under 24 hours</strong> on business days (Mon–Fri, UTC+1).</span>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      </div>
+      <div class="card-title">General questions</div>
+      <div class="card-desc">Product questions, feedback, feature requests, or just to say hello.</div>
+      <a href="mailto:hello@statusskip.com" class="card-link">hello@statusskip.com</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="card-title">Privacy &amp; data</div>
+      <div class="card-desc">Data deletion requests, privacy questions, or GDPR enquiries.</div>
+      <a href="mailto:privacy@statusskip.com" class="card-link">privacy@statusskip.com</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="card-title">Billing &amp; Pro</div>
+      <div class="card-desc">Pro activation issues, PayPal payment questions, or refund requests.</div>
+      <a href="mailto:billing@statusskip.com" class="card-link">billing@statusskip.com</a>
+    </div>
+
+    <div class="contact-card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="card-title">Report an issue</div>
+      <div class="card-desc">Something broken, an email not delivered, or a bug you found.</div>
+      <a href="mailto:support@statusskip.com" class="card-link">support@statusskip.com</a>
+    </div>
+  </div>
+
+  <h2>Before you write — quick answers</h2>
+  <div class="mini-faq">
+    <div class="mini-faq-item">
+      <div class="mini-faq-q">I upgraded to Pro but my limit isn't lifted.</div>
+      <div class="mini-faq-a">Email <a href="mailto:billing@statusskip.com">billing@statusskip.com</a> with the PayPal email you used and the email you enter in StatusSkip. We'll activate manually within a few hours. Automated activation is in development.</div>
+    </div>
+    <div class="mini-faq-item">
+      <div class="mini-faq-q">My report email landed in spam.</div>
+      <div class="mini-faq-a">Ask your manager to add the sender address to their contacts. On the first send from a new address, some spam filters apply extra scrutiny. Subsequent sends are typically delivered cleanly.</div>
+    </div>
+    <div class="mini-faq-item">
+      <div class="mini-faq-q">I want to delete my data.</div>
+      <div class="mini-faq-a">Email <a href="mailto:privacy@statusskip.com">privacy@statusskip.com</a> with the email address you use on StatusSkip. We'll delete all associated submission logs within 14 days and confirm by reply.</div>
+    </div>
+    <div class="mini-faq-item">
+      <div class="mini-faq-q">I want to request a refund.</div>
+      <div class="mini-faq-a">We offer full refunds within 7 days of your first Pro payment. Email <a href="mailto:billing@statusskip.com">billing@statusskip.com</a> with your PayPal transaction ID.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a class="footer-logo" href="index.html">StatusSkip</a>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <p class="footer-copy">© 2026 StatusSkip</p>
+</footer>
+
+</body>
+</html>
