@@ -391,7 +391,14 @@
           <input type="hidden" name="notify_url" value="https://script.google.com/macros/s/AKfycbx_ZTzxDooQVdIdiwxWawgD-EvS_Y9PLhxnKmzf287ahUQOZPrk1ghIEyAdyqUjKJTD0Q/exec">
           <input type="hidden" name="return" value="https://azeddinefatouhi.github.io/StatusSkip/pro-welcome.html">
           <input type="hidden" name="cancel_return" value="https://azeddinefatouhi.github.io/StatusSkip/index.html#pricing">
-          <button type="submit" class="btn-plan" style="width:100%;cursor:pointer;">
+          <input type="hidden" name="custom" id="paypal-custom-email" value="">
+          <div style="margin-bottom:10px;">
+            <label style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;">Your StatusSkip email <span style="color:var(--accent);">*</span></label>
+            <input type="email" id="pro-email-input" placeholder="you@gmail.com" required
+              style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;margin-bottom:10px;"
+              oninput="document.getElementById('paypal-custom-email').value=this.value">
+          </div>
+          <button type="submit" class="btn-plan" style="width:100%;cursor:pointer;" onclick="return validateProEmail()">
             Upgrade to Pro — $7/mo
           </button>
         </form>
@@ -468,6 +475,18 @@
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     obs.observe(el);
   });
+
+  function validateProEmail() {
+    const email = document.getElementById('pro-email-input').value.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !re.test(email)) {
+      document.getElementById('pro-email-input').style.borderColor = '#f87171';
+      document.getElementById('pro-email-input').focus();
+      return false;
+    }
+    document.getElementById('paypal-custom-email').value = email;
+    return true;
+  }
 </script>
 </body>
 </html>
