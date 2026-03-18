@@ -202,13 +202,23 @@
 </head>
 <body>
 
+<!-- PRO USER BANNER -->
+<div id="proBanner" style="background:linear-gradient(90deg,rgba(212,245,100,0.08),rgba(212,245,100,0.14),rgba(212,245,100,0.08));border-bottom:1px solid rgba(212,245,100,0.2);padding:10px 24px;text-align:center;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+  <span style="font-size:13px;color:var(--text2);">Already a Pro member?</span>
+  <button onclick="document.getElementById('proSignInModal').style.display='flex'"
+    style="display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#0c0c0f;font-size:13px;font-weight:700;padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-family:'Geist',sans-serif;transition:background .15s;">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+    Access Pro App
+  </button>
+  <button onclick="document.getElementById('proBanner').style.display='none'" style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;line-height:1;padding:0 4px;">&times;</button>
+</div>
+
 <nav>
   <a class="logo" href="#"><span class="logo-dot"></span>StatusSkip</a>
   <div class="nav-right">
     <a href="#how" class="nav-link">How it works</a>
     <a href="#pricing" class="nav-link">Pricing</a>
-    <a href="#" onclick="proLogin(event)" class="nav-link" style="color:var(--accent);font-weight:600;">Pro Login</a>
-    <a href="#" onclick="document.getElementById('proSignInModal').style.display='flex';return false;" style="font-size:13px;color:var(--text2);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Pro login</a>
+    <a href="#" onclick="document.getElementById('proSignInModal').style.display='flex';return false;" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(212,245,100,0.3);padding:7px 14px;border-radius:7px;transition:background .15s;" onmouseover="this.style.background='rgba(212,245,100,0.06)'" onmouseout="this.style.background='transparent'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Pro Login</a>
     <a href="app.html" class="btn-nav">Try Free →</a>
   </div>
 </nav>
@@ -221,6 +231,14 @@
   <p class="hero-sub">3 tasks. 3 sliders. One click. StatusSkip turns your weekly progress into a beautiful email your manager will actually read.</p>
   <div class="hero-cta">
     <a href="app.html" class="btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Send Your First Report Free</a>
+    <button onclick="document.getElementById('proSignInModal').style.display='flex'"
+      style="display:inline-flex;align-items:center;gap:9px;background:transparent;border:1px solid rgba(212,245,100,0.4);color:var(--accent);font-size:14px;font-weight:600;padding:14px 28px;border-radius:12px;cursor:pointer;font-family:'Geist',sans-serif;transition:all .2s;position:relative;"
+      onmouseover="this.style.background='rgba(212,245,100,0.08)';this.style.borderColor='var(--accent)'"
+      onmouseout="this.style.background='transparent';this.style.borderColor='rgba(212,245,100,0.4)'">
+      <span style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0c0c0f;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:2px 8px;border-radius:999px;white-space:nowrap;">PRO MEMBER</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Access Your Pro Dashboard
+    </button>
     <a href="#how" class="btn-ghost">See how it works →</a>
   </div>
   <p class="hero-note">Free forever · No account needed · Works with any email</p>
@@ -563,14 +581,6 @@
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     obs.observe(el);
   });
-
-  function proLogin(e) {
-    e.preventDefault();
-    const email = prompt('Enter your Pro email address:');
-    if (email && email.trim()) {
-      window.location.href = 'app.html?email=' + encodeURIComponent(email.trim());
-    }
-  }
 
   function switchTemplate(name, btn) {
     // Hide all previews
