@@ -736,7 +736,8 @@
   }
 
   // ── ADD TASK ──
-  document.getElementById('addTask2Btn').addEventListener('click', function() {
+  const addTask2El = document.getElementById('addTask2Btn');
+  if (addTask2El) addTask2El.addEventListener('click', function() {
     if (taskCount === 1) {
       document.getElementById('task-card-2').style.display = 'block';
       this.textContent = '+ Add a third task';
@@ -807,7 +808,9 @@
   }
 
   ['userName', 'userEmail', 'managerEmail'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
       validateForm();
       updatePreview();
       if (id === 'userEmail') {
@@ -816,8 +819,10 @@
     });
   });
   for (let i = 1; i <= 3; i++) {
-    document.getElementById(`task${i}`).addEventListener('input', () => updateCharCount(i));
-    document.getElementById(`progress${i}`).addEventListener('input', () => updateSlider(i));
+    const taskEl = document.getElementById(`task${i}`);
+    const progEl = document.getElementById(`progress${i}`);
+    if (taskEl) taskEl.addEventListener('input', () => updateCharCount(i));
+    if (progEl) progEl.addEventListener('input', () => updateSlider(i));
   }
 
   // Update preview when template changes
@@ -832,7 +837,8 @@
   });
 
   // ── SEND ──
-  document.getElementById('sendBtn').addEventListener('click', sendReport);
+  const sendBtnEl = document.getElementById('sendBtn');
+  if (sendBtnEl) sendBtnEl.addEventListener('click', sendReport);
 
   async function sendReport() {
     if (!validateForm()) return;
