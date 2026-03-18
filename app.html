@@ -471,7 +471,7 @@
     <a href="app.html" class="btn-another" id="sendAnotherBtn">Send another →</a>
     <button class="btn-share" onclick="shareProduct()">Share StatusSkip</button>
   </div>
-  <p style="font-size:12px;color:var(--text3);margin-top:24px;">
+  <p id="proUpgradeNudge" style="font-size:12px;color:var(--text3);margin-top:24px;">
     Want reminders every week? <a href="index.html#pricing" style="color:var(--accent);text-decoration:none;">Upgrade to Pro via PayPal →</a>
   </p>
 </div>
@@ -793,8 +793,10 @@
   function setProUI(isPro) {
     const nudge = document.getElementById('proNudge');
     const tplSelector = document.getElementById('templateSelector');
+    const upgradeNudge = document.getElementById('proUpgradeNudge');
     if (nudge) nudge.style.display = isPro ? 'none' : 'flex';
     if (tplSelector) tplSelector.style.display = isPro ? 'block' : 'none';
+    if (upgradeNudge) upgradeNudge.style.display = isPro ? 'none' : 'block';
   }
 
   ['userName', 'userEmail', 'managerEmail'].forEach(id => {
