@@ -150,7 +150,18 @@ function processReport(params) {
   }
 }
 
-function doGet() {
+function doGet(e) {
+  // Pro status check endpoint — called from app.html to verify Pro status
+  const params = e && e.parameter ? e.parameter : {};
+
+  if (params.checkPro && params.userEmail) {
+    const email = params.userEmail.toLowerCase().trim();
+    const pro = isProUser(email);
+    return ContentService
+      .createTextOutput(JSON.stringify({ isPro: pro, email: email }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   return HtmlService.createHtmlOutput(`
     <h2>${CONFIG.BRAND_NAME} API</h2>
     <p>POST JSON to this URL to send a status report.</p>
@@ -557,9 +568,9 @@ function logSubmission(name, userEmail, managerEmail, tasks, progress) {
     const sheet = getOrCreateSheet(CONFIG.SHEET_NAME_SUBMISSIONS);
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(['Timestamp', 'Name', 'User Email', 'Manager Email',
-        'Task 1', 'P1%', 'Task 2', 'P2%', 'Task 3', 'P3%']);
+        'Task 1', 'P1%', 'Task 2', 'P2%', 'Task 3', 'P3%', 'Task 4', 'P4%', 'Task 5', 'P5%']);
       sheet.setFrozenRows(1);
-      sheet.getRange(1, 1, 1, 10).setFontWeight('bold');
+      sheet.getRange(1, 1, 1, 14).setFontWeight('bold');
     }
     sheet.appendRow([
       new Date().toISOString(),
@@ -567,6 +578,8 @@ function logSubmission(name, userEmail, managerEmail, tasks, progress) {
       tasks[0] || '', progress[0] || 0,
       tasks[1] || '', progress[1] || 0,
       tasks[2] || '', progress[2] || 0,
+      tasks[3] || '', progress[3] || 0,
+      tasks[4] || '', progress[4] || 0,
     ]);
   } catch (err) {
     console.warn('Sheet logging failed:', err.toString());

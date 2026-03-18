@@ -125,6 +125,13 @@
     input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
     input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--text); border: 2px solid var(--bg); cursor: pointer; }
 
+    .task-delete-btn {
+      background: none; border: none; color: var(--text3); cursor: pointer;
+      padding: 4px; border-radius: 4px; display: flex; align-items: center;
+      transition: color .15s, background .15s;
+    }
+    .task-delete-btn:hover { color: var(--red); background: rgba(248,113,113,0.1); }
+
     .add-task-btn {
       width: 100%; padding: 12px; border-radius: var(--radius);
       border: 1px dashed var(--border2); background: transparent;
@@ -303,7 +310,7 @@
     <!-- SECTION 2: Tasks -->
     <div class="section-label">This week's tasks</div>
 
-    <!-- Task 1 -->
+    <!-- Task 1 (always visible, no delete) -->
     <div class="task-card" id="task-card-1">
       <div class="task-card-header">
         <span class="task-num">Task 1 <span style="color:var(--accent)">*</span></span>
@@ -312,49 +319,88 @@
       <input type="text" id="task1" placeholder="e.g. Redesign the onboarding flow" maxlength="100">
       <div class="task-char-count"><span id="count1">0</span>/100</div>
       <div class="slider-wrap">
-        <div class="slider-header">
-          <span class="slider-label">Progress</span>
-          <span class="slider-val" id="val1">50%</span>
-        </div>
+        <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val1">50%</span></div>
         <input type="range" id="progress1" min="0" max="100" value="50" step="5">
       </div>
     </div>
 
-    <!-- Task 2 (hidden by default) -->
+    <!-- Tasks 2-5 (hidden by default, with delete button) -->
     <div class="task-card" id="task-card-2" style="display:none">
       <div class="task-card-header">
         <span class="task-num">Task 2</span>
-        <span class="task-status-badge" id="badge-2"></span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="task-status-badge" id="badge-2"></span>
+          <button class="task-delete-btn" onclick="deleteTask(2)" title="Remove task">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <input type="text" id="task2" placeholder="e.g. Write API documentation" maxlength="100">
       <div class="task-char-count"><span id="count2">0</span>/100</div>
       <div class="slider-wrap">
-        <div class="slider-header">
-          <span class="slider-label">Progress</span>
-          <span class="slider-val" id="val2">50%</span>
-        </div>
+        <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val2">50%</span></div>
         <input type="range" id="progress2" min="0" max="100" value="50" step="5">
       </div>
     </div>
 
-    <!-- Task 3 (hidden by default) -->
     <div class="task-card" id="task-card-3" style="display:none">
       <div class="task-card-header">
         <span class="task-num">Task 3</span>
-        <span class="task-status-badge" id="badge-3"></span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="task-status-badge" id="badge-3"></span>
+          <button class="task-delete-btn" onclick="deleteTask(3)" title="Remove task">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <input type="text" id="task3" placeholder="e.g. Prepare Q2 roadmap" maxlength="100">
       <div class="task-char-count"><span id="count3">0</span>/100</div>
       <div class="slider-wrap">
-        <div class="slider-header">
-          <span class="slider-label">Progress</span>
-          <span class="slider-val" id="val3">50%</span>
-        </div>
+        <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val3">50%</span></div>
         <input type="range" id="progress3" min="0" max="100" value="50" step="5">
       </div>
     </div>
 
-    <button class="add-task-btn" id="addTask2Btn">+ Add another task</button>
+    <div class="task-card" id="task-card-4" style="display:none">
+      <div class="task-card-header">
+        <span class="task-num">Task 4</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="task-status-badge" id="badge-4"></span>
+          <button class="task-delete-btn" onclick="deleteTask(4)" title="Remove task">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <input type="text" id="task4" placeholder="e.g. Review Q2 budget" maxlength="100">
+      <div class="task-char-count"><span id="count4">0</span>/100</div>
+      <div class="slider-wrap">
+        <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val4">50%</span></div>
+        <input type="range" id="progress4" min="0" max="100" value="50" step="5">
+      </div>
+    </div>
+
+    <div class="task-card" id="task-card-5" style="display:none">
+      <div class="task-card-header">
+        <span class="task-num">Task 5</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="task-status-badge" id="badge-5"></span>
+          <button class="task-delete-btn" onclick="deleteTask(5)" title="Remove task">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <input type="text" id="task5" placeholder="e.g. Team 1:1 follow-ups" maxlength="100">
+      <div class="task-char-count"><span id="count5">0</span>/100</div>
+      <div class="slider-wrap">
+        <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val5">50%</span></div>
+        <input type="range" id="progress5" min="0" max="100" value="50" step="5">
+      </div>
+    </div>
+
+    <button class="add-task-btn" id="addTask2Btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add another task
+    </button>
 
     <div class="divider"></div>
 
@@ -572,7 +618,7 @@
 
     // Collect tasks
     const taskData = [];
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= (typeof MAX_TASKS !== 'undefined' ? MAX_TASKS : 5); i++) {
       const taskEl = document.getElementById(`task${i}`);
       const progEl = document.getElementById(`progress${i}`);
       const card = document.getElementById(`task-card-${i}`);
@@ -736,21 +782,50 @@
   }
 
   // ── ADD TASK ──
+  const MAX_TASKS = 5;
+
   const addTask2El = document.getElementById('addTask2Btn');
   if (addTask2El) addTask2El.addEventListener('click', function() {
-    if (taskCount === 1) {
-      document.getElementById('task-card-2').style.display = 'block';
-      this.textContent = '+ Add a third task';
-      taskCount = 2;
-      initSlider(2);
-    } else if (taskCount === 2) {
-      document.getElementById('task-card-3').style.display = 'block';
-      this.style.display = 'none';
-      taskCount = 3;
-      initSlider(3);
+    if (taskCount < MAX_TASKS) {
+      taskCount++;
+      const card = document.getElementById(`task-card-${taskCount}`);
+      if (card) {
+        card.style.display = 'block';
+        // Reset the card
+        document.getElementById(`task${taskCount}`).value = '';
+        document.getElementById(`count${taskCount}`).textContent = '0';
+        document.getElementById(`progress${taskCount}`).value = 50;
+        initSlider(taskCount);
+        // Wire up events for new task
+        const taskEl = document.getElementById(`task${taskCount}`);
+        const progEl = document.getElementById(`progress${taskCount}`);
+        const tc = taskCount;
+        if (taskEl) taskEl.addEventListener('input', () => updateCharCount(tc));
+        if (progEl) progEl.addEventListener('input', () => updateSlider(tc));
+      }
+      if (taskCount >= MAX_TASKS) this.style.display = 'none';
     }
     updatePreview();
   });
+
+  function deleteTask(num) {
+    const card = document.getElementById(`task-card-${num}`);
+    if (!card) return;
+    // Clear the task data
+    const taskEl = document.getElementById(`task${num}`);
+    const progEl = document.getElementById(`progress${num}`);
+    if (taskEl) taskEl.value = '';
+    if (progEl) progEl.value = 50;
+    // Hide the card
+    card.style.display = 'none';
+    // Decrease count only if this was the last visible task
+    if (num === taskCount) taskCount--;
+    // Show add button again
+    const addBtn = document.getElementById('addTask2Btn');
+    if (addBtn) addBtn.style.display = 'flex';
+    validateForm();
+    updatePreview();
+  }
 
   function initSlider(i) {
     const slider = document.getElementById(`progress${i}`);
@@ -848,7 +923,7 @@
     const managerEmail = document.getElementById('managerEmail').value.trim();
 
     const tasks = [], progress = [];
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= MAX_TASKS; i++) {
       const card = document.getElementById(`task-card-${i}`);
       if (!card || card.style.display === 'none') continue;
       const t = document.getElementById(`task${i}`).value.trim();
