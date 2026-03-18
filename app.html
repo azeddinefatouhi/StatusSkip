@@ -650,6 +650,7 @@
   }
 
   function renderStandardPreview(taskData, avg, onTrack, behind) {
+    const inProgress = taskData.filter(t => t.pct >= 50 && t.pct < 80).length;
     // Reset preview card to standard dark style
     const card = document.getElementById('previewCard');
     card.style.background = '#16161b';
@@ -674,7 +675,7 @@
       html += `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px;margin-top:6px;display:flex;justify-content:space-around;text-align:center;border:1px solid rgba(255,255,255,0.07);">
         <div><div style="font-size:18px;font-weight:700;color:#f0f0f2;">${avg}%</div><div style="font-size:9px;color:#55555f;margin-top:2px;">AVG</div></div>
         <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#4ade80;">${onTrack}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">ON TRACK</div></div>
-        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#fbbf24;">${progressVals.filter(p=>p>=50&&p<80).length}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">IN PROGRESS</div></div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#fbbf24;">${inProgress}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">IN PROGRESS</div></div>
         <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#f87171;">${behind}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">BEHIND</div></div>
       </div>`;
     }
@@ -714,6 +715,7 @@
   }
 
   function renderFreelancerPreview(name, week, taskData, avg, onTrack, behind) {
+    const inProgress = taskData.filter(t => t.pct >= 50 && t.pct < 80).length;
     const card = document.getElementById('previewCard');
     card.style.background = '#f0f4ff';
     document.querySelector('.ep-header').style.background = '#1a1a2e';
@@ -740,7 +742,7 @@
       html += `<div style="background:#fff;border-radius:8px;padding:12px;margin-top:8px;display:flex;justify-content:space-around;text-align:center;">
         <div><div style="font-size:20px;font-weight:700;color:#1a1a2e;">${avg}%</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">OVERALL</div></div>
         <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#16a34a;">${onTrack}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">ON TRACK</div></div>
-        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#f59e0b;">${progressVals.filter(p=>p>=50&&p<80).length}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">IN PROGRESS</div></div>
+        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#f59e0b;">${inProgress}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">IN PROGRESS</div></div>
         <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#dc2626;">${behind}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">BEHIND</div></div>
       </div>`;
     }
