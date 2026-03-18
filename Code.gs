@@ -16,7 +16,8 @@ const CONFIG = {
   FREE_LIMIT_PER_WEEK: 1,
   BRAND_NAME: 'StatusSkip',
   BRAND_URL: 'https://azeddinefatouhi.github.io/StatusSkip',
-  UPGRADE_URL: 'https://azeddinefatouhi.github.io/StatusSkip/index.html#pricing', // PayPal subscription page
+  UPGRADE_URL: 'https://azeddinefatouhi.github.io/StatusSkip/index.html#pricing',
+  SPREADSHEET_ID: '1xGmNfyV7Xk9wMp5zMX8KLiyO4h0a4XOC1xL8BChH2BA',
 };
 
 // ================================================================
@@ -206,7 +207,7 @@ function handlePayPalIPN(params) {
 }
 
 function markUserAsPro(userEmail, paypalEmail) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
   let sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG.SHEET_NAME_PRO_USERS);
@@ -226,7 +227,7 @@ function markUserAsPro(userEmail, paypalEmail) {
 }
 
 function revokeProAccess(userEmail) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
   const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
   if (!sheet) return;
   const data = sheet.getDataRange().getValues();
@@ -612,7 +613,7 @@ function getWeeklyCountByManager(managerEmail) {
 
 function isProUser(userEmail) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
     const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
     if (!sheet) return false;
     const emails = sheet.getRange(2, 1, Math.max(sheet.getLastRow() - 1, 1), 1).getValues().flat();
@@ -627,7 +628,7 @@ function isProUser(userEmail) {
 // ================================================================
 
 function getOrCreateSheet(name) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
   return ss.getSheetByName(name) || ss.insertSheet(name);
 }
 
@@ -672,4 +673,50 @@ function jsonOut(obj) {
 
 function err(msg) {
   return jsonOut({ status: 'error', message: msg });
+}
+
+// ================================================================
+// SETUP HELPERS — run these once from the Apps Script editor
+// ================================================================
+
+function createSheets() {
+  const sub = getOrCreateSheet(CONFIG.SHEET_NAME_SUBMISSIONS);
+  if (sub.getLastRow() === 0) {
+    sub.appendRow(['Timestamp','Name','User Email','Manager Email','Task 1','P1%','Task 2','P2%','Task 3','P3%']);
+    sub.setFrozenRows(1);
+    sub.getRange(1,1,1,10).setFontWeight('bold');
+  }
+
+  const pro = getOrCreateSheet(CONFIG.SHEET_NAME_PRO_USERS);
+  if (pro.getLastRow() === 0) {
+    pro.appendRow(['Email','PayPal Email','Activated At','Status']);
+    pro.setFrozenRows(1);
+    pro.getRange(1,1,1,4).setFontWeight('bold');
+  }
+
+  Logger.log('Sheets ready.');
+}
+
+function testSheets() {
+  const sub = getOrCreateSheet(CONFIG.SHEET_NAME_SUBMISSIONS);
+  const pro = getOrCreateSheet(CONFIG.SHEET_NAME_PRO_USERS);
+  Logger.log('Submissions rows: ' + sub.getLastRow());
+  Logger.log('Pro Users rows: ' + pro.getLastRow());
+  Logger.log('Spreadsheet URL: https://docs.google.com/spreadsheets/d/' + CONFIG.SPREADSHEET_ID);
+}
+
+function debugProUser() {
+  const email = 'azeddinefatouhi1991@gmail.com';
+  const result = isProUser(email);
+  Logger.log('isProUser(' + email + ') = ' + result);
+
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
+  if (!sheet) {
+    Logger.log('Pro Users sheet NOT FOUND');
+    return;
+  }
+  const data = sheet.getDataRange().getValues();
+  Logger.log('Pro Users sheet rows: ' + data.length);
+  data.forEach((row, i) => Logger.log('Row ' + i + ': ' + JSON.stringify(row)));
 }
