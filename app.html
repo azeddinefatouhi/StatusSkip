@@ -667,8 +667,55 @@
   }
 
   // ── WIRE UP EVENTS ──
+  // ── PRO STATUS CHECK ──
+  let proCheckTimer = null;
+
+  function checkProStatus(email) {
+    if (!email || !isValidEmail(email)) {
+      setProUI(false);
+      return;
+    }
+    // Check localStorage cache first for instant response
+    try {
+      const cached = localStorage.getItem('ss_pro_' + btoa(email.toLowerCase()));
+      if (cached === '1') { setProUI(true); return; }
+    } catch(e) {}
+
+    // Debounce — wait 800ms after user stops typing then check server
+    clearTimeout(proCheckTimer);
+    proCheckTimer = setTimeout(async () => {
+      try {
+        // GET request — no CORS issues with Apps Script
+        const url = APPS_SCRIPT_URL + '?checkPro=1&userEmail=' + encodeURIComponent(email);
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.isPro) {
+          try { localStorage.setItem('ss_pro_' + btoa(email.toLowerCase()), '1'); } catch(e) {}
+          setProUI(true);
+        } else {
+          setProUI(false);
+        }
+      } catch(e) {
+        setProUI(false);
+      }
+    }, 800);
+  }
+
+  function setProUI(isPro) {
+    const nudge = document.getElementById('proNudge');
+    const tplSelector = document.getElementById('templateSelector');
+    if (nudge) nudge.style.display = isPro ? 'none' : 'flex';
+    if (tplSelector) tplSelector.style.display = isPro ? 'block' : 'none';
+  }
+
   ['userName', 'userEmail', 'managerEmail'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => { validateForm(); updatePreview(); });
+    document.getElementById(id).addEventListener('input', () => {
+      validateForm();
+      updatePreview();
+      if (id === 'userEmail') {
+        checkProStatus(document.getElementById('userEmail').value.trim());
+      }
+    });
   });
   for (let i = 1; i <= 3; i++) {
     document.getElementById(`task${i}`).addEventListener('input', () => updateCharCount(i));
@@ -752,6 +799,13 @@
       const nextUrl = `${baseUrl}?name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}${userEmail ? '&email=' + encodeURIComponent(userEmail) : ''}`;
       document.getElementById('sendAnotherBtn').href = nextUrl;
 
+      // Cache Pro status after successful send based on server behavior
+      // If no footer nudge was shown, user is Pro — mark in localStorage
+      const nudge = document.getElementById('proNudge');
+      if (nudge && nudge.style.display === 'none') {
+        try { localStorage.setItem('ss_pro_' + btoa(userEmail.toLowerCase()), '1'); } catch(e) {}
+      }
+
       document.getElementById('successScreen').classList.add('show');
 
     } catch (err) {
@@ -773,6 +827,15 @@
 
   // Set week string
   document.getElementById('ep-week').textContent = getWeekString();
+
+  // Check Pro status on page load if email is pre-filled
+  const prefilledEmail = document.getElementById('userEmail').value.trim();
+  if (prefilledEmail && isValidEmail(prefilledEmail)) {
+    checkProStatus(prefilledEmail);
+  }
+
+  // On page load hide template selector (shown only for Pro)
+  setProUI(false);
 </script>
 </body>
 </html>
