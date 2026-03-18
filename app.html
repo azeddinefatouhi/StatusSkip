@@ -273,8 +273,8 @@
         <div class="field-error" id="err-name">Please enter your name</div>
       </div>
       <div class="field">
-        <label for="userEmail">Your email</label>
-        <input type="email" id="userEmail" placeholder="you@company.com" autocomplete="email">
+        <label for="userEmail">Your email <span class="req">*</span></label>
+        <input type="email" id="userEmail" placeholder="you@company.com" autocomplete="email" required>
         <div class="field-error" id="err-useremail">Invalid email format</div>
       </div>
     </div>
@@ -544,9 +544,10 @@
   // ── FORM VALIDATION ──
   function validateForm() {
     const name = document.getElementById('userName').value.trim();
+    const userEmail = document.getElementById('userEmail').value.trim();
     const manager = document.getElementById('managerEmail').value.trim();
     const task1 = document.getElementById('task1').value.trim();
-    const valid = name.length >= 1 && isValidEmail(manager) && task1.length >= 3;
+    const valid = name.length >= 1 && isValidEmail(userEmail) && isValidEmail(manager) && task1.length >= 3;
     document.getElementById('sendBtn').disabled = !valid;
     updateStepIndicator(name, manager, task1);
     return valid;

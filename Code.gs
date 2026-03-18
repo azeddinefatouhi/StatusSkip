@@ -93,17 +93,24 @@ function processReport(params) {
     if (cleanTasks.length === 0) return err('At least one task is required');
 
     // --- Freemium check (server-side) ---
-    if (cleanUserEmail) {
-      const isPro = isProUser(cleanUserEmail);
-      if (!isPro) {
-        const weekCount = getWeeklyCount(cleanUserEmail);
-        if (weekCount >= CONFIG.FREE_LIMIT_PER_WEEK) {
-          return jsonOut({
-            status: 'limit_reached',
-            message: `Free plan limit reached. Upgrade to Pro for unlimited reports.`,
-            upgrade_url: CONFIG.UPGRADE_URL,
-          });
-        }
+    // userEmail is now required — block anonymous submissions
+    if (!cleanUserEmail) {
+      return err('Your email is required to send a report.');
+    }
+
+    const isPro = isProUser(cleanUserEmail);
+    if (!isPro) {
+      // Check by userEmail
+      const countByEmail = getWeeklyCount(cleanUserEmail);
+      // Also check by managerEmail to catch throwaway email abuse
+      const countByManager = getWeeklyCountByManager(cleanManager);
+
+      if (countByEmail >= CONFIG.FREE_LIMIT_PER_WEEK || countByManager >= CONFIG.FREE_LIMIT_PER_WEEK) {
+        return jsonOut({
+          status: 'limit_reached',
+          message: 'Free plan limit reached. Upgrade to Pro for unlimited reports.',
+          upgrade_url: CONFIG.UPGRADE_URL,
+        });
       }
     }
 
@@ -463,6 +470,24 @@ function getWeeklyCount(userEmail) {
     }).length;
   } catch (err) {
     console.warn('getWeeklyCount failed:', err);
+    return 0;
+  }
+}
+
+function getWeeklyCountByManager(managerEmail) {
+  try {
+    const sheet = getOrCreateSheet(CONFIG.SHEET_NAME_SUBMISSIONS);
+    const data = sheet.getDataRange().getValues();
+    const now = new Date();
+    const mon = new Date(now);
+    mon.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1));
+    mon.setHours(0, 0, 0, 0);
+    return data.slice(1).filter(row => {
+      const ts = new Date(row[0]);
+      const mgr = (row[3] || '').toLowerCase();
+      return mgr === managerEmail.toLowerCase() && ts >= mon;
+    }).length;
+  } catch (err) {
     return 0;
   }
 }
