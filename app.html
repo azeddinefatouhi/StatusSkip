@@ -255,6 +255,7 @@
 <div class="topbar">
   <a class="logo" href="index.html"><span class="logo-dot"></span>StatusSkip</a>
   <div class="topbar-right">
+    <span id="proIndicator" style="display:none;font-size:11px;font-weight:700;color:var(--accent);background:rgba(212,245,100,0.1);border:1px solid rgba(212,245,100,0.2);padding:4px 10px;border-radius:5px;letter-spacing:.5px;">PRO</span>
     <a href="index.html" class="topbar-link">← Back to home</a>
   </div>
 </div>
@@ -471,6 +472,9 @@
     <a href="app.html" class="btn-another" id="sendAnotherBtn">Send another →</a>
     <button class="btn-share" onclick="shareProduct()">Share StatusSkip</button>
   </div>
+  <p id="proBookmarkHint" style="display:none;font-size:12px;color:var(--text3);margin-top:16px;">
+    Pro tip: <a id="proBookmarkLink" href="#" style="color:var(--accent);text-decoration:none;" onclick="copyProLink(event)">Copy your Pro bookmark link</a> — open it anytime to skip straight to your Pro workspace.
+  </p>
   <p id="proUpgradeNudge" style="font-size:12px;color:var(--text3);margin-top:24px;">
     Want reminders every week? <a href="index.html#pricing" style="color:var(--accent);text-decoration:none;">Upgrade to Pro via PayPal →</a>
   </p>
@@ -794,9 +798,12 @@
     const nudge = document.getElementById('proNudge');
     const tplSelector = document.getElementById('templateSelector');
     const upgradeNudge = document.getElementById('proUpgradeNudge');
+    const proIndicator = document.getElementById('proIndicator');
+    const upgradeModal = document.getElementById('upgradeModal');
     if (nudge) nudge.style.display = isPro ? 'none' : 'flex';
     if (tplSelector) tplSelector.style.display = isPro ? 'block' : 'none';
     if (upgradeNudge) upgradeNudge.style.display = isPro ? 'none' : 'block';
+    if (proIndicator) proIndicator.style.display = isPro ? 'inline-block' : 'none';
   }
 
   ['userName', 'userEmail', 'managerEmail'].forEach(id => {
@@ -901,6 +908,16 @@
       const nextUrl = `${baseUrl}?name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}${userEmail ? '&email=' + encodeURIComponent(userEmail) : ''}`;
       document.getElementById('sendAnotherBtn').href = nextUrl;
 
+      // Show Pro bookmark hint for Pro users
+      const proHint = document.getElementById('proBookmarkHint');
+      const proLink = document.getElementById('proBookmarkLink');
+      const nudge = document.getElementById('proNudge');
+      if (nudge && nudge.style.display === 'none' && userEmail) {
+        const bookmarkUrl = `${baseUrl}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}`;
+        if (proLink) proLink.dataset.url = bookmarkUrl;
+        if (proHint) proHint.style.display = 'block';
+      }
+
       // Cache Pro status after successful send based on server behavior
       // If no footer nudge was shown, user is Pro — mark in localStorage
       const nudge = document.getElementById('proNudge');
@@ -917,6 +934,19 @@
     }
   }
 
+  function copyProLink(e) {
+    e.preventDefault();
+    const link = e.target.dataset.url || e.target.closest('a').dataset.url;
+    if (!link) return;
+    navigator.clipboard.writeText(link).then(() => {
+      e.target.textContent = 'Copied!';
+      setTimeout(() => { e.target.textContent = 'Copy your Pro bookmark link'; }, 2000);
+    }).catch(() => {
+      // Fallback
+      prompt('Copy this link and bookmark it:', link);
+    });
+  }
+
   function shareProduct() {
     const text = encodeURIComponent('Just sent my weekly status report in 60 seconds with StatusSkip — it auto-generates a beautiful HTML email from 3 tasks + sliders. Free to use: https://azeddinefatouhi.github.io/StatusSkip');
     window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
@@ -930,14 +960,24 @@
   // Set week string
   document.getElementById('ep-week').textContent = getWeekString();
 
-  // Check Pro status on page load if email is pre-filled
-  const prefilledEmail = document.getElementById('userEmail').value.trim();
-  if (prefilledEmail && isValidEmail(prefilledEmail)) {
-    checkProStatus(prefilledEmail);
-  }
-
   // On page load hide template selector (shown only for Pro)
   setProUI(false);
+
+  // Check Pro status on page load if email is pre-filled from URL
+  const prefilledEmail = document.getElementById('userEmail').value.trim();
+  if (prefilledEmail && isValidEmail(prefilledEmail)) {
+    // Check localStorage cache first — instant, no network request
+    try {
+      const cached = localStorage.getItem('ss_pro_' + btoa(prefilledEmail.toLowerCase()));
+      if (cached === '1') {
+        setProUI(true);
+      } else {
+        checkProStatus(prefilledEmail);
+      }
+    } catch(e) {
+      checkProStatus(prefilledEmail);
+    }
+  }
 </script>
 </body>
 </html>
