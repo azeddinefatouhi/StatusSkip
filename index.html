@@ -173,6 +173,11 @@
     .footer-links a:hover { color: var(--text2); }
     .footer-copy { font-size: 12px; color: var(--text3); }
 
+    .tpl-switch { background:none; border:1px solid var(--border); color:var(--text3); font-size:11px; font-weight:600; padding:5px 12px; border-radius:6px; cursor:pointer; font-family:'Geist',sans-serif; transition:all .15s; }
+    .tpl-switch:hover { border-color:var(--border2); color:var(--text2); }
+    .tpl-switch.active { border-color:var(--accent); color:var(--accent); background:rgba(212,245,100,0.06); }
+    .tpl-preview { transition: opacity .2s ease; }
+
     @media (max-width: 900px) {
       .steps, .features-grid, .quotes { grid-template-columns: 1fr; }
       .step { border-right: none; border-bottom: 1px solid var(--border); }
@@ -218,39 +223,120 @@
   </div>
   <p class="hero-note">Free forever · No account needed · Works with any email</p>
   <div class="preview-wrap">
-    <p class="preview-label">↓ What your manager receives</p>
-    <div class="email-card">
+    <!-- Template switcher -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <p class="preview-label" style="margin:0;">↓ What your manager receives</p>
+      <div style="display:flex;gap:6px;">
+        <button class="tpl-switch active" onclick="switchTemplate('standard',this)">Standard</button>
+        <button class="tpl-switch" onclick="switchTemplate('executive',this)">Executive <span style="font-size:9px;background:rgba(212,245,100,0.15);color:var(--accent);padding:2px 5px;border-radius:3px;margin-left:2px;">Pro</span></button>
+        <button class="tpl-switch" onclick="switchTemplate('freelancer',this)">Freelancer <span style="font-size:9px;background:rgba(212,245,100,0.15);color:var(--accent);padding:2px 5px;border-radius:3px;margin-left:2px;">Pro</span></button>
+      </div>
+    </div>
+
+    <!-- STANDARD TEMPLATE -->
+    <div class="email-card tpl-preview" id="preview-standard">
       <div class="ec-bar">
         <span class="ec-dot" style="background:#ff5f57"></span>
         <span class="ec-dot" style="background:#febc2e"></span>
         <span class="ec-dot" style="background:#28c840"></span>
-        <span class="ec-subject"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:#4ade80;margin-right:4px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Weekly Update: Alex Johnson — Mar 17–21</span>
+        <span class="ec-subject">Weekly Update: Alex Johnson — Mar 17–21</span>
       </div>
       <div class="ec-header">
         <div class="ec-eyebrow">Weekly Status Report</div>
-        <div class="ec-name"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;color:#818cf8;margin-right:6px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>Alex Johnson</div>
+        <div class="ec-name">Alex Johnson</div>
         <div class="ec-week">Week of Mar 17–21, 2026</div>
       </div>
       <div class="ec-body">
         <div class="ec-task" style="background:rgba(74,222,128,0.06);border-color:#4ade80;">
           <div class="ec-task-name">Launch new landing page</div>
           <div class="ec-bar-track"><div class="ec-bar-fill" style="width:92%;background:#4ade80;"></div></div>
-          <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#4ade80;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>On Track</span><span>92%</span></div>
+          <div class="ec-task-meta"><span style="color:#4ade80;">On Track</span><span>92%</span></div>
         </div>
         <div class="ec-task" style="background:rgba(251,191,36,0.06);border-color:#fbbf24;">
           <div class="ec-task-name">Integrate Stripe payments</div>
           <div class="ec-bar-track"><div class="ec-bar-fill" style="width:65%;background:#fbbf24;"></div></div>
-          <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#fbbf24;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>In Progress</span><span>65%</span></div>
+          <div class="ec-task-meta"><span style="color:#fbbf24;">In Progress</span><span>65%</span></div>
         </div>
         <div class="ec-task" style="background:rgba(248,113,113,0.06);border-color:#f87171;">
           <div class="ec-task-name">Write API documentation</div>
           <div class="ec-bar-track"><div class="ec-bar-fill" style="width:28%;background:#f87171;"></div></div>
-          <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#f87171;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Behind</span><span>28%</span></div>
+          <div class="ec-task-meta"><span style="color:#f87171;">Behind</span><span>28%</span></div>
         </div>
         <div class="ec-summary">
           <div><div class="ec-stat-val">62%</div><div class="ec-stat-label">AVG PROGRESS</div></div>
           <div style="border-left:1px solid rgba(255,255,255,0.06)"><div class="ec-stat-val" style="color:#4ade80;">1</div><div class="ec-stat-label">ON TRACK</div></div>
           <div style="border-left:1px solid rgba(255,255,255,0.06)"><div class="ec-stat-val" style="color:#f87171;">1</div><div class="ec-stat-label">NEEDS ATTENTION</div></div>
+        </div>
+      </div>
+      <div style="padding:10px 20px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);text-align:center;">Sent via StatusSkip · Reply to respond</div>
+    </div>
+
+    <!-- EXECUTIVE TEMPLATE -->
+    <div class="email-card tpl-preview" id="preview-executive" style="display:none;background:#fff;">
+      <div style="background:#1e293b;padding:10px 16px;display:flex;align-items:center;gap:6px;">
+        <span class="ec-dot" style="background:#ff5f57"></span>
+        <span class="ec-dot" style="background:#febc2e"></span>
+        <span class="ec-dot" style="background:#28c840"></span>
+        <span style="font-size:10px;color:#64748b;margin-left:6px;">Weekly Update: Alex Johnson</span>
+      </div>
+      <div style="padding:24px 28px;border-bottom:2px solid #1e293b;background:#fff;">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;">Weekly Status Update</div>
+        <div style="font-size:18px;font-weight:700;color:#0f172a;">Alex Johnson</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Week of Mar 17–21, 2026</div>
+      </div>
+      <div style="padding:20px 28px;background:#fff;">
+        <div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#1e293b;">Launch new landing page</span>
+          <span style="font-size:11px;font-weight:700;color:#16a34a;">92% <span style="display:inline-block;width:48px;height:3px;background:#e2e8f0;border-radius:2px;vertical-align:middle;margin-left:6px;"><span style="display:block;width:92%;height:3px;background:#16a34a;border-radius:2px;"></span></span></span>
+        </div>
+        <div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#1e293b;">Integrate Stripe payments</span>
+          <span style="font-size:11px;font-weight:700;color:#d97706;">65% <span style="display:inline-block;width:48px;height:3px;background:#e2e8f0;border-radius:2px;vertical-align:middle;margin-left:6px;"><span style="display:block;width:65%;height:3px;background:#d97706;border-radius:2px;"></span></span></span>
+        </div>
+        <div style="padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#1e293b;">Write API documentation</span>
+          <span style="font-size:11px;font-weight:700;color:#dc2626;">28% <span style="display:inline-block;width:48px;height:3px;background:#e2e8f0;border-radius:2px;vertical-align:middle;margin-left:6px;"><span style="display:block;width:28%;height:3px;background:#dc2626;border-radius:2px;"></span></span></span>
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;">
+          <span style="font-size:11px;color:#64748b;">Average progress this week</span>
+          <span style="font-size:16px;font-weight:700;color:#0f172a;">62%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FREELANCER TEMPLATE -->
+    <div class="email-card tpl-preview" id="preview-freelancer" style="display:none;background:#f0f4ff;">
+      <div style="background:#1e1e2a;padding:10px 16px;display:flex;align-items:center;gap:6px;">
+        <span class="ec-dot" style="background:#ff5f57"></span>
+        <span class="ec-dot" style="background:#febc2e"></span>
+        <span class="ec-dot" style="background:#28c840"></span>
+        <span style="font-size:10px;color:#64748b;margin-left:6px;">Client Status Report — Alex Johnson</span>
+      </div>
+      <div style="background:#1a1a2e;padding:20px 24px;">
+        <div style="font-size:9px;color:#4a5568;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Client Status Report</div>
+        <div style="font-size:18px;font-weight:700;color:#fff;">Alex Johnson</div>
+        <div style="font-size:11px;color:#4a5568;margin-top:3px;">Week of Mar 17–21, 2026</div>
+      </div>
+      <div style="padding:16px 20px;background:#f0f4ff;">
+        <div style="background:rgba(74,222,128,0.1);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;font-weight:700;color:#1a1a2e;">Launch new landing page</span><span style="font-size:12px;font-weight:700;color:#16a34a;">92%</span></div>
+          <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:5px;"><div style="background:#16a34a;width:92%;height:5px;border-radius:999px;"></div></div>
+          <div style="font-size:10px;color:#16a34a;font-weight:600;margin-top:4px;">On Track</div>
+        </div>
+        <div style="background:rgba(251,191,36,0.1);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;font-weight:700;color:#1a1a2e;">Integrate Stripe payments</span><span style="font-size:12px;font-weight:700;color:#d97706;">65%</span></div>
+          <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:5px;"><div style="background:#d97706;width:65%;height:5px;border-radius:999px;"></div></div>
+          <div style="font-size:10px;color:#d97706;font-weight:600;margin-top:4px;">In Progress</div>
+        </div>
+        <div style="background:rgba(248,113,113,0.12);border-radius:8px;padding:10px 14px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;font-weight:700;color:#1a1a2e;">Write API documentation</span><span style="font-size:12px;font-weight:700;color:#dc2626;">28%</span></div>
+          <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:5px;"><div style="background:#dc2626;width:28%;height:5px;border-radius:999px;"></div></div>
+          <div style="font-size:10px;color:#dc2626;font-weight:600;margin-top:4px;">Behind</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:12px;margin-top:10px;display:flex;justify-content:space-around;text-align:center;">
+          <div><div style="font-size:20px;font-weight:700;color:#1a1a2e;">62%</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">OVERALL</div></div>
+          <div style="border-left:1px solid #e2e8f0;"><div style="font-size:20px;font-weight:700;color:#16a34a;">1</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">ON TRACK</div></div>
+          <div style="border-left:1px solid #e2e8f0;"><div style="font-size:20px;font-weight:700;color:#dc2626;">1</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NEEDS ATTENTION</div></div>
         </div>
       </div>
     </div>
@@ -381,7 +467,7 @@
         <div id="paypal-pro-btn">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
           <input type="hidden" name="cmd" value="_xclick-subscriptions">
-          <input type="hidden" name="business" value="azeddinefatouhi1991@gmail.com">
+          <input type="hidden" name="business" value="YOUR_PAYPAL_BUSINESS_EMAIL">
           <input type="hidden" name="item_name" value="StatusSkip Pro">
           <input type="hidden" name="a3" value="7.00">
           <input type="hidden" name="p3" value="1">
@@ -475,6 +561,16 @@
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     obs.observe(el);
   });
+
+  function switchTemplate(name, btn) {
+    // Hide all previews
+    document.querySelectorAll('.tpl-preview').forEach(el => el.style.display = 'none');
+    // Remove active from all buttons
+    document.querySelectorAll('.tpl-switch').forEach(el => el.classList.remove('active'));
+    // Show selected
+    document.getElementById('preview-' + name).style.display = 'block';
+    btn.classList.add('active');
+  }
 
   function validateProEmail() {
     const email = document.getElementById('pro-email-input').value.trim();
