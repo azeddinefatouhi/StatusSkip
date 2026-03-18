@@ -114,8 +114,12 @@ function processReport(params) {
       }
     }
 
+    // --- Template selection (Pro only) ---
+    const requestedTemplate = (params.template || 'standard').toLowerCase();
+    const template = isPro ? requestedTemplate : 'standard'; // free users always get standard
+
     // --- Generate & send email ---
-    const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail);
+    const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail, isPro, template);
     const subject = `Weekly Update: ${cleanName} — ${getWeekString()}`;
 
     GmailApp.sendEmail(cleanManager, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
@@ -246,7 +250,14 @@ function activateProManually(email) {
 // EMAIL HTML GENERATOR
 // ================================================================
 
-function generateEmailHTML(name, tasks, progress, userEmail) {
+function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template) {
+  const isFree = !isProUser;
+  const tpl = template || 'standard';
+
+  // Route to correct template for Pro users
+  if (!isFree && tpl === 'executive') return generateExecutiveHTML(name, tasks, progress, userEmail);
+  if (!isFree && tpl === 'freelancer') return generateFreelancerHTML(name, tasks, progress, userEmail);
+  // Default: Standard template (below)
   const week = getWeekString();
   const taskRows = tasks.map((task, i) => {
     const pct = progress[i] || 0;
@@ -324,7 +335,7 @@ function generateEmailHTML(name, tasks, progress, userEmail) {
         ${replyTo}
       </td>
       <td align="right" style="font-size:12px;color:#94a3b8;white-space:nowrap;">
-        Sent via <a href="${CONFIG.BRAND_URL}" style="color:#4f46e5;text-decoration:none;">${CONFIG.BRAND_NAME}</a>
+        ${isFree ? `<a href="${CONFIG.BRAND_URL}" style="color:#4f46e5;text-decoration:none;font-weight:600;">Sent via ${CONFIG.BRAND_NAME}</a>` : ''}
       </td>
     </tr></table>
   </td></tr>
@@ -334,6 +345,113 @@ function generateEmailHTML(name, tasks, progress, userEmail) {
 </table>
 </body>
 </html>`;
+}
+
+function generateExecutiveHTML(name, tasks, progress, userEmail) {
+  const week = getWeekString();
+  const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
+  const taskRows = tasks.map((task, i) => {
+    const pct = progress[i] || 0;
+    const c = getStatusColors(pct);
+    return `<tr>
+      <td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">
+        <table width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td style="font-size:13px;color:#1e293b;">${escHtml(task)}</td>
+          <td align="right" style="white-space:nowrap;">
+            <span style="font-size:12px;font-weight:700;color:${c.text};">${pct}%</span>
+            <span style="display:inline-block;width:60px;height:4px;background:#e2e8f0;border-radius:2px;margin-left:8px;vertical-align:middle;">
+              <span style="display:block;width:${pct}%;height:4px;background:${c.bar};border-radius:2px;"></span>
+            </span>
+          </td>
+        </tr></table>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:Georgia,serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;background:#f8fafc;">
+<tr><td>
+<table width="560" align="center" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+  <tr><td style="padding:32px 40px;border-bottom:2px solid #1e293b;">
+    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;">Weekly Status Update</div>
+    <div style="font-size:22px;font-weight:700;color:#0f172a;">${escHtml(name)}</div>
+    <div style="font-size:12px;color:#94a3b8;margin-top:4px;">${week}</div>
+  </td></tr>
+  <tr><td style="padding:28px 40px;">
+    <table width="100%" cellpadding="0" cellspacing="0">${taskRows}</table>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;padding-top:20px;border-top:1px solid #f1f5f9;">
+      <tr>
+        <td style="font-size:12px;color:#64748b;">Average progress this week</td>
+        <td align="right" style="font-size:20px;font-weight:700;color:#0f172a;">${avg}%</td>
+      </tr>
+    </table>
+  </td></tr>
+  <tr><td style="padding:16px 40px;border-top:1px solid #f1f5f9;font-size:11px;color:#cbd5e1;">
+    ${userEmail ? `Reply to reach ${escHtml(name)}.` : ''}
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+}
+
+function generateFreelancerHTML(name, tasks, progress, userEmail) {
+  const week = getWeekString();
+  const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
+  const onTrack = progress.filter(p => p >= 80).length;
+  const behind = progress.filter(p => p < 50).length;
+
+  const taskCards = tasks.map((task, i) => {
+    const pct = progress[i] || 0;
+    const c = getStatusColors(pct);
+    return `
+    <div style="background:${c.bg};border-radius:10px;padding:16px 20px;margin-bottom:12px;">
+      <div style="display:table;width:100%;margin-bottom:10px;">
+        <span style="display:table-cell;font-size:14px;font-weight:700;color:#1a1a2e;">${escHtml(task)}</span>
+        <span style="display:table-cell;text-align:right;font-size:13px;font-weight:700;color:${c.text};">${pct}%</span>
+      </div>
+      <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:6px;">
+        <div style="background:${c.bar};width:${pct}%;height:6px;border-radius:999px;"></div>
+      </div>
+      <div style="font-size:11px;color:${c.text};margin-top:6px;font-weight:600;">${c.label}</div>
+    </div>`;
+  }).join('');
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f0f4ff;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;background:#f0f4ff;">
+<tr><td>
+<table width="580" align="center" cellpadding="0" cellspacing="0" style="max-width:580px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+  <tr><td style="background:#1a1a2e;padding:28px 36px;">
+    <div style="font-size:10px;color:#4a5568;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Client Status Report</div>
+    <div style="font-size:24px;font-weight:700;color:#fff;">${escHtml(name)}</div>
+    <div style="font-size:12px;color:#4a5568;margin-top:4px;">${week}</div>
+  </td></tr>
+  <tr><td style="padding:28px 36px;">
+    ${taskCards}
+    <div style="background:#f8fafc;border-radius:10px;padding:16px;margin-top:8px;display:table;width:100%;box-sizing:border-box;">
+      <div style="display:table-cell;text-align:center;padding:0 8px;">
+        <div style="font-size:26px;font-weight:700;color:#1a1a2e;">${avg}%</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:2px;">OVERALL</div>
+      </div>
+      <div style="display:table-cell;text-align:center;padding:0 8px;border-left:1px solid #e2e8f0;">
+        <div style="font-size:26px;font-weight:700;color:#16a34a;">${onTrack}</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:2px;">ON TRACK</div>
+      </div>
+      <div style="display:table-cell;text-align:center;padding:0 8px;border-left:1px solid #e2e8f0;">
+        <div style="font-size:26px;font-weight:700;color:#dc2626;">${behind}</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:2px;">NEEDS ATTENTION</div>
+      </div>
+    </div>
+  </td></tr>
+  <tr><td style="padding:14px 36px;border-top:1px solid #f1f5f9;font-size:11px;color:#94a3b8;">
+    ${userEmail ? `Reply to reach ${escHtml(name)}.` : ''}
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
 }
 
 function generateConfirmationHTML(name, managerEmail) {

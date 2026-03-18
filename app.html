@@ -231,6 +231,10 @@
     .preview-empty-icon { font-size: 0; display:block; }
     .preview-empty-text { font-size: 14px; }
 
+    .tpl-btn { padding:9px 8px; border-radius:8px; font-size:12px; font-weight:600; text-align:center; background:var(--bg3); border:1px solid var(--border); color:var(--text3); transition:all .15s; }
+    .tpl-btn.tpl-active { border-color:var(--accent); color:var(--accent); background:rgba(212,245,100,0.06); }
+    input[type="radio"]:checked + .tpl-btn { border-color:var(--accent); color:var(--accent); background:rgba(212,245,100,0.06); }
+
     @media (max-width: 900px) {
       .app-layout { grid-template-columns: 1fr; }
       .preview-panel { display: none; }
@@ -348,6 +352,31 @@
     <!-- SECTION 3: Send -->
     <div class="section-label">Send</div>
 
+    <!-- Template selector - shown after Pro upgrade -->
+    <div id="templateSelector" style="display:none;margin-bottom:16px;">
+      <label style="font-size:12px;font-weight:500;color:#9090a0;display:block;margin-bottom:8px;">Email template</label>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <label style="cursor:pointer;">
+          <input type="radio" name="template" value="standard" checked style="display:none;">
+          <div class="tpl-btn tpl-active" id="tpl-standard">Standard</div>
+        </label>
+        <label style="cursor:pointer;">
+          <input type="radio" name="template" value="executive" style="display:none;">
+          <div class="tpl-btn" id="tpl-executive">Executive</div>
+        </label>
+        <label style="cursor:pointer;">
+          <input type="radio" name="template" value="freelancer" style="display:none;">
+          <div class="tpl-btn" id="tpl-freelancer">Freelancer</div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Pro upsell nudge for free users -->
+    <div id="proNudge" style="margin-bottom:16px;padding:12px 16px;background:rgba(212,245,100,0.05);border:1px solid rgba(212,245,100,0.15);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <span style="font-size:12px;color:#9090a0;">Your report includes a <strong style="color:#d4f564;">StatusSkip</strong> footer</span>
+      <button onclick="document.getElementById('upgradeModal').style.display='flex'" style="background:none;border:1px solid rgba(212,245,100,0.3);color:#d4f564;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:'Geist',sans-serif;white-space:nowrap;">Remove it</button>
+    </div>
+
     <div class="submit-area">
       <button class="btn-send" id="sendBtn" disabled>
         <span id="sendBtnText"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;margin-right:2px;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg> Send Status Report</span>
@@ -385,6 +414,37 @@
         <div class="ep-footer-text">Sent via <a href="#">StatusSkip</a> · Reply to respond</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div id="upgradeModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div style="background:#111115;border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:44px 40px;max-width:420px;width:90%;text-align:center;">
+    <div style="width:52px;height:52px;background:rgba(212,245,100,0.1);border:1px solid rgba(212,245,100,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </div>
+    <h2 style="font-family:'Instrument Serif',serif;font-size:26px;color:#f0f0f2;margin-bottom:10px;font-weight:400;">Upgrade to Pro</h2>
+    <p style="font-size:14px;color:#9090a0;line-height:1.7;margin-bottom:20px;">Get the full StatusSkip experience for <strong style="color:#f0f0f2;">$7/month</strong>.</p>
+    <div style="text-align:left;background:rgba(255,255,255,0.03);border-radius:10px;padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Remove "Sent via StatusSkip" footer
+      </div>
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Executive &amp; Freelancer email templates
+      </div>
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Weekly reminder emails every Friday
+      </div>
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Send to multiple managers at once
+      </div>
+    </div>
+    <a href="index.html#pricing" style="display:block;background:#d4f564;color:#0c0c0f;font-weight:700;font-size:15px;padding:14px;border-radius:10px;text-decoration:none;margin-bottom:12px;">Upgrade to Pro — $7/month</a>
+    <button onclick="document.getElementById('upgradeModal').style.display='none'" style="background:none;border:none;color:#55555f;font-size:13px;cursor:pointer;font-family:'Geist',sans-serif;">Continue with free</button>
   </div>
 </div>
 
@@ -637,7 +697,9 @@
       document.getElementById('loadingText').textContent = loadingMsgs[msgIdx];
     }, 1200);
 
-    const payload = { userName: name, userEmail, managerEmail, tasks, progress };
+    const selectedTemplate = document.querySelector('input[name="template"]:checked');
+    const template = selectedTemplate ? selectedTemplate.value : 'standard';
+    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template };
 
     try {
       let sent = false;
@@ -653,6 +715,7 @@
           managerEmail: payload.managerEmail,
           tasks: JSON.stringify(payload.tasks),
           progress: JSON.stringify(payload.progress),
+          template: payload.template || 'standard',
         });
 
         await fetch(APPS_SCRIPT_URL, {

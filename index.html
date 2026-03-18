@@ -230,7 +230,7 @@
           <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#4ade80;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>On Track</span><span>92%</span></div>
         </div>
         <div class="ec-task" style="background:rgba(251,191,36,0.06);border-color:#fbbf24;">
-          <div class="ec-task-name">Integrate PayPal payments</div>
+          <div class="ec-task-name">Integrate Stripe payments</div>
           <div class="ec-bar-track"><div class="ec-bar-fill" style="width:65%;background:#fbbf24;"></div></div>
           <div class="ec-task-meta"><span style="display:inline-flex;align-items:center;gap:4px;color:#fbbf24;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>In Progress</span><span>65%</span></div>
         </div>
@@ -343,32 +343,32 @@
       <div class="plan">
         <div class="plan-tier">Free</div>
         <div class="plan-price">$0</div>
-        <div class="plan-desc">For occasional reporters</div>
+        <div class="plan-desc">Send unlimited reports, forever free</div>
         <ul class="plan-features">
-          <li class="yes">1 report per week</li>
+          <li class="yes">Unlimited reports</li>
           <li class="yes">Standard email template</li>
           <li class="yes">Live preview</li>
           <li class="yes">Confirmation copy to self</li>
-          <li class="no">Multiple manager emails</li>
-          <li class="no">Pro templates</li>
+          <li class="no">Executive &amp; Freelancer templates</li>
           <li class="no">Weekly reminder emails</li>
-          <li class="no">Remove StatusSkip footer</li>
+          <li class="no">Multiple manager emails</li>
+          <li class="no">Remove StatusSkip footer branding</li>
         </ul>
         <a href="app.html" class="btn-plan">Start Free →</a>
       </div>
       <div class="plan featured">
         <div class="plan-tier">Pro</div>
         <div class="plan-price"><sup>$</sup>7<sub>/mo</sub></div>
-        <div class="plan-desc">For freelancers &amp; power users</div>
+        <div class="plan-desc">For professionals who send to clients</div>
         <ul class="plan-features">
           <li class="yes">Unlimited reports</li>
-          <li class="yes">Standard email template</li>
+          <li class="yes">All 3 email templates</li>
           <li class="yes">Live preview</li>
           <li class="yes">Confirmation copy to self</li>
           <li class="yes">Multiple manager emails</li>
-          <li class="yes">Executive + Freelancer templates</li>
-          <li class="yes">Weekly reminder emails</li>
-          <li class="yes">Remove StatusSkip footer</li>
+          <li class="yes">Weekly reminder emails every Friday</li>
+          <li class="yes">No StatusSkip footer — looks 100% yours</li>
+          <li class="yes">Priority support</li>
         </ul>
         <div id="paypal-pro-btn">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
@@ -435,6 +435,7 @@
 </footer>
 
 <script>
+  // FAQ accordion
   document.querySelectorAll('.faq').forEach(faq => {
     faq.querySelector('.faq-q').addEventListener('click', () => {
       const isOpen = faq.classList.contains('open');
@@ -443,6 +444,7 @@
     });
   });
 
+  // Scroll fade-in animations
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
