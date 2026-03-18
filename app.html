@@ -547,9 +547,15 @@
   }
 
   // ── PREVIEW UPDATE ──
+  function getSelectedTemplate() {
+    const sel = document.querySelector('input[name="template"]:checked');
+    return sel ? sel.value : 'standard';
+  }
+
   function updatePreview() {
     const name = document.getElementById('userName').value.trim();
     const managerEmail = document.getElementById('managerEmail').value.trim();
+    const template = getSelectedTemplate();
 
     const hasContent = name || managerEmail;
     document.getElementById('previewEmpty').style.display = hasContent ? 'none' : 'flex';
@@ -557,52 +563,135 @@
 
     if (!hasContent) return;
 
-    document.getElementById('ep-subject').textContent = `Weekly Update: ${name || '(your name)'} — ${getWeekString()}`;
-    document.getElementById('ep-name').textContent = `${name || '(your name)'}`;
-    document.getElementById('ep-week').textContent = getWeekString();
+    const displayName = name || '(your name)';
+    const week = getWeekString();
 
-    let tasksHTML = '';
-    let progressVals = [];
-
+    // Collect tasks
+    const taskData = [];
     for (let i = 1; i <= 3; i++) {
       const taskEl = document.getElementById(`task${i}`);
       const progEl = document.getElementById(`progress${i}`);
       const card = document.getElementById(`task-card-${i}`);
       if (!card || card.style.display === 'none') continue;
-
       const text = taskEl.value.trim();
       const pct = parseInt(progEl.value);
       if (!text && i > 1) continue;
+      taskData.push({ text: text || '(enter task name)', pct });
+    }
 
-      progressVals.push(pct);
+    const progressVals = taskData.map(t => t.pct);
+    const avg = progressVals.length ? Math.round(progressVals.reduce((a,b)=>a+b,0)/progressVals.length) : 0;
+    const onTrack = progressVals.filter(p => p >= 80).length;
+    const behind = progressVals.filter(p => p < 50).length;
+
+    // Update preview chrome (subject + name)
+    document.getElementById('ep-subject').textContent = `Weekly Update: ${displayName} — ${week}`;
+    document.getElementById('ep-name').textContent = displayName;
+    document.getElementById('ep-week').textContent = week;
+
+    if (template === 'executive') {
+      renderExecutivePreview(displayName, week, taskData, avg);
+    } else if (template === 'freelancer') {
+      renderFreelancerPreview(displayName, week, taskData, avg, onTrack, behind);
+    } else {
+      renderStandardPreview(taskData, avg, onTrack, behind);
+    }
+  }
+
+  function renderStandardPreview(taskData, avg, onTrack, behind) {
+    // Reset preview card to standard dark style
+    const card = document.getElementById('previewCard');
+    card.style.background = '#16161b';
+    document.querySelector('.ep-header').style.background = 'linear-gradient(135deg, #1a2744 0%, #0d1f3c 100%)';
+    document.getElementById('ep-name').style.color = '#e8f0fe';
+    document.getElementById('ep-week').style.color = '#3a5070';
+
+    let html = '';
+    taskData.forEach(({text, pct}) => {
       const s = getStatus(pct);
-      const displayText = text || '(enter task name)';
-      tasksHTML += `
-        <div style="background:${s.bg};border-left:4px solid ${s.color};border-radius:8px;padding:11px 14px;margin-bottom:10px;">
-          <div style="font-size:13px;font-weight:600;color:#f0f0f2;margin-bottom:7px;">${escHTML(displayText)}</div>
-          <div style="background:rgba(255,255,255,0.08);border-radius:999px;height:5px;overflow:hidden;">
-            <div style="background:${s.color};width:${pct}%;height:5px;border-radius:999px;"></div>
-          </div>
-          <div style="font-size:11px;color:#55555f;margin-top:5px;display:flex;justify-content:space-between;">
-            <span>${s.label}</span><span>${pct}%</span>
-          </div>
-        </div>`;
+      html += `<div style="background:${s.bg};border-left:4px solid ${s.color};border-radius:8px;padding:11px 14px;margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:600;color:#f0f0f2;margin-bottom:7px;">${escHTML(text)}</div>
+        <div style="background:rgba(255,255,255,0.08);border-radius:999px;height:5px;overflow:hidden;">
+          <div style="background:${s.color};width:${pct}%;height:5px;border-radius:999px;"></div>
+        </div>
+        <div style="font-size:11px;color:#55555f;margin-top:5px;display:flex;justify-content:space-between;">
+          <span style="color:${s.textColor};">${s.label}</span><span>${pct}%</span>
+        </div>
+      </div>`;
+    });
+    if (taskData.length) {
+      html += `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px;margin-top:6px;display:flex;justify-content:space-around;text-align:center;border:1px solid rgba(255,255,255,0.07);">
+        <div><div style="font-size:22px;font-weight:700;color:#f0f0f2;">${avg}%</div><div style="font-size:10px;color:#55555f;margin-top:2px;">AVG PROGRESS</div></div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:22px;font-weight:700;color:#4ade80;">${onTrack}</div><div style="font-size:10px;color:#55555f;margin-top:2px;">ON TRACK</div></div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:22px;font-weight:700;color:#f87171;">${behind}</div><div style="font-size:10px;color:#55555f;margin-top:2px;">NEEDS ATTENTION</div></div>
+      </div>`;
     }
+    document.getElementById('ep-tasks').innerHTML = html;
+  }
 
-    // Summary
-    if (progressVals.length > 0) {
-      const avg = Math.round(progressVals.reduce((a, b) => a + b, 0) / progressVals.length);
-      const onTrack = progressVals.filter(p => p >= 80).length;
-      const behind = progressVals.filter(p => p < 50).length;
-      tasksHTML += `
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px;margin-top:6px;display:flex;justify-content:space-around;text-align:center;border:1px solid rgba(255,255,255,0.07);">
-          <div><div style="font-family:'Instrument Serif',serif;font-size:24px;color:#f0f0f2;">${avg}%</div><div style="font-size:10px;color:#55555f;margin-top:2px;">AVG PROGRESS</div></div>
-          <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-family:'Instrument Serif',serif;font-size:24px;color:#4ade80;">${onTrack}</div><div style="font-size:10px;color:#55555f;margin-top:2px;">ON TRACK</div></div>
-          <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-family:'Instrument Serif',serif;font-size:24px;color:#f87171;">${behind}</div><div style="font-size:10px;color:#55555f;margin-top:2px;">NEEDS ATTENTION</div></div>
-        </div>`;
+  function renderExecutivePreview(name, week, taskData, avg) {
+    const card = document.getElementById('previewCard');
+    card.style.background = '#ffffff';
+    document.querySelector('.ep-header').style.background = '#ffffff';
+    document.querySelector('.ep-header').style.borderBottom = '2px solid #1e293b';
+    document.getElementById('ep-name').style.color = '#0f172a';
+    document.getElementById('ep-week').style.color = '#94a3b8';
+    // update eyebrow
+    document.querySelector('.ep-eyebrow').style.color = '#94a3b8';
+
+    let html = '';
+    taskData.forEach(({text, pct}) => {
+      const s = getStatus(pct);
+      html += `<div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:#1e293b;">${escHTML(text)}</span>
+        <span style="font-size:11px;font-weight:700;color:${s.color};white-space:nowrap;">
+          ${pct}%
+          <span style="display:inline-block;width:44px;height:3px;background:#e2e8f0;border-radius:2px;vertical-align:middle;margin-left:6px;">
+            <span style="display:block;width:${pct}%;height:3px;background:${s.color};border-radius:2px;"></span>
+          </span>
+        </span>
+      </div>`;
+    });
+    if (taskData.length) {
+      html += `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:#64748b;">Average progress this week</span>
+        <span style="font-size:18px;font-weight:700;color:#0f172a;">${avg}%</span>
+      </div>`;
     }
+    document.getElementById('ep-tasks').innerHTML = html;
+  }
 
-    document.getElementById('ep-tasks').innerHTML = tasksHTML;
+  function renderFreelancerPreview(name, week, taskData, avg, onTrack, behind) {
+    const card = document.getElementById('previewCard');
+    card.style.background = '#f0f4ff';
+    document.querySelector('.ep-header').style.background = '#1a1a2e';
+    document.querySelector('.ep-header').style.borderBottom = 'none';
+    document.getElementById('ep-name').style.color = '#ffffff';
+    document.getElementById('ep-week').style.color = '#4a5568';
+    document.querySelector('.ep-eyebrow').style.color = '#4a5568';
+
+    let html = '';
+    taskData.forEach(({text, pct}) => {
+      const s = getStatus(pct);
+      html += `<div style="background:${s.bg};border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:12px;font-weight:700;color:#1a1a2e;">${escHTML(text)}</span>
+          <span style="font-size:12px;font-weight:700;color:${s.color};">${pct}%</span>
+        </div>
+        <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:5px;">
+          <div style="background:${s.color};width:${pct}%;height:5px;border-radius:999px;"></div>
+        </div>
+        <div style="font-size:10px;color:${s.color};font-weight:600;margin-top:4px;">${s.label}</div>
+      </div>`;
+    });
+    if (taskData.length) {
+      html += `<div style="background:#fff;border-radius:8px;padding:12px;margin-top:8px;display:flex;justify-content:space-around;text-align:center;">
+        <div><div style="font-size:20px;font-weight:700;color:#1a1a2e;">${avg}%</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">OVERALL</div></div>
+        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:20px;font-weight:700;color:#16a34a;">${onTrack}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">ON TRACK</div></div>
+        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:20px;font-weight:700;color:#dc2626;">${behind}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NEEDS ATTENTION</div></div>
+      </div>`;
+    }
+    document.getElementById('ep-tasks').innerHTML = html;
   }
 
   function escHTML(str) {
@@ -721,6 +810,17 @@
     document.getElementById(`task${i}`).addEventListener('input', () => updateCharCount(i));
     document.getElementById(`progress${i}`).addEventListener('input', () => updateSlider(i));
   }
+
+  // Update preview when template changes
+  document.querySelectorAll('input[name="template"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      // Update active button style
+      document.querySelectorAll('.tpl-btn').forEach(btn => btn.classList.remove('tpl-active'));
+      const id = 'tpl-' + radio.value;
+      if (document.getElementById(id)) document.getElementById(id).classList.add('tpl-active');
+      updatePreview();
+    });
+  });
 
   // ── SEND ──
   document.getElementById('sendBtn').addEventListener('click', sendReport);
