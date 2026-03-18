@@ -291,6 +291,7 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
 
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
   const onTrack = progress.filter(p => p >= 80).length;
+  const inProgress = progress.filter(p => p >= 50 && p < 80).length;
   const behind = progress.filter(p => p < 50).length;
 
   const replyTo = userEmail ? `Reply directly to this email to reach ${escHtml(name)}.` : 'Reply to this email to respond.';
@@ -323,17 +324,21 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
       <div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;font-weight:700;">Week Summary</div>
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td align="center" style="padding:0 8px;">
-            <div style="font-size:28px;font-weight:700;color:#1a1a2e;font-family:Georgia,serif;">${avg}%</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Avg Progress</div>
+          <td align="center" style="padding:0 6px;">
+            <div style="font-size:24px;font-weight:700;color:#1a1a2e;font-family:Georgia,serif;">${avg}%</div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Avg Progress</div>
           </td>
-          <td align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;">
-            <div style="font-size:28px;font-weight:700;color:#16a34a;font-family:Georgia,serif;">${onTrack}</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:3px;">On Track</div>
+          <td align="center" style="padding:0 6px;border-left:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:700;color:#16a34a;font-family:Georgia,serif;">${onTrack}</div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:3px;">On Track</div>
           </td>
-          <td align="center" style="padding:0 8px;border-left:1px solid #e2e8f0;">
-            <div style="font-size:28px;font-weight:700;color:#dc2626;font-family:Georgia,serif;">${behind}</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Needs Attention</div>
+          <td align="center" style="padding:0 6px;border-left:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:700;color:#d97706;font-family:Georgia,serif;">${inProgress}</div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:3px;">In Progress</div>
+          </td>
+          <td align="center" style="padding:0 6px;border-left:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:700;color:#dc2626;font-family:Georgia,serif;">${behind}</div>
+            <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Behind</div>
           </td>
         </tr>
       </table>
@@ -412,6 +417,7 @@ function generateFreelancerHTML(name, tasks, progress, userEmail) {
   const week = getWeekString();
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
   const onTrack = progress.filter(p => p >= 80).length;
+  const inProgress = progress.filter(p => p >= 50 && p < 80).length;
   const behind = progress.filter(p => p < 50).length;
 
   const taskCards = tasks.map((task, i) => {

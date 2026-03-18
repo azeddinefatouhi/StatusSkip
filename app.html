@@ -671,9 +671,10 @@
     });
     if (taskData.length) {
       html += `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px;margin-top:6px;display:flex;justify-content:space-around;text-align:center;border:1px solid rgba(255,255,255,0.07);">
-        <div><div style="font-size:22px;font-weight:700;color:#f0f0f2;">${avg}%</div><div style="font-size:10px;color:#55555f;margin-top:2px;">AVG PROGRESS</div></div>
-        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:22px;font-weight:700;color:#4ade80;">${onTrack}</div><div style="font-size:10px;color:#55555f;margin-top:2px;">ON TRACK</div></div>
-        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:22px;font-weight:700;color:#f87171;">${behind}</div><div style="font-size:10px;color:#55555f;margin-top:2px;">NEEDS ATTENTION</div></div>
+        <div><div style="font-size:18px;font-weight:700;color:#f0f0f2;">${avg}%</div><div style="font-size:9px;color:#55555f;margin-top:2px;">AVG</div></div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#4ade80;">${onTrack}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">ON TRACK</div></div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#fbbf24;">${progressVals.filter(p=>p>=50&&p<80).length}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">IN PROGRESS</div></div>
+        <div style="border-left:1px solid rgba(255,255,255,0.06)"><div style="font-size:18px;font-weight:700;color:#f87171;">${behind}</div><div style="font-size:9px;color:#55555f;margin-top:2px;">BEHIND</div></div>
       </div>`;
     }
     document.getElementById('ep-tasks').innerHTML = html;
@@ -737,8 +738,9 @@
     if (taskData.length) {
       html += `<div style="background:#fff;border-radius:8px;padding:12px;margin-top:8px;display:flex;justify-content:space-around;text-align:center;">
         <div><div style="font-size:20px;font-weight:700;color:#1a1a2e;">${avg}%</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">OVERALL</div></div>
-        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:20px;font-weight:700;color:#16a34a;">${onTrack}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">ON TRACK</div></div>
-        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:20px;font-weight:700;color:#dc2626;">${behind}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NEEDS ATTENTION</div></div>
+        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#16a34a;">${onTrack}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">ON TRACK</div></div>
+        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#f59e0b;">${progressVals.filter(p=>p>=50&&p<80).length}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">IN PROGRESS</div></div>
+        <div style="border-left:1px solid #e2e8f0;"><div style="font-size:18px;font-weight:700;color:#dc2626;">${behind}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">BEHIND</div></div>
       </div>`;
     }
     document.getElementById('ep-tasks').innerHTML = html;
