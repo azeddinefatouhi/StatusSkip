@@ -908,18 +908,7 @@
       const nextUrl = `${baseUrl}?name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}${userEmail ? '&email=' + encodeURIComponent(userEmail) : ''}`;
       document.getElementById('sendAnotherBtn').href = nextUrl;
 
-      // Show Pro bookmark hint for Pro users
-      const proHint = document.getElementById('proBookmarkHint');
-      const proLink = document.getElementById('proBookmarkLink');
-      const nudge = document.getElementById('proNudge');
-      if (nudge && nudge.style.display === 'none' && userEmail) {
-        const bookmarkUrl = `${baseUrl}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}`;
-        if (proLink) proLink.dataset.url = bookmarkUrl;
-        if (proHint) proHint.style.display = 'block';
-      }
-
-      // Cache Pro status after successful send based on server behavior
-      // If no footer nudge was shown, user is Pro — mark in localStorage
+      // Cache Pro status and update UI after successful send
       const nudge = document.getElementById('proNudge');
       if (nudge && nudge.style.display === 'none') {
         try { localStorage.setItem('ss_pro_' + btoa(userEmail.toLowerCase()), '1'); } catch(e) {}
