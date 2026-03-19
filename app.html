@@ -726,17 +726,19 @@
     const displayName = name || '(your name)';
     const week = getWeekString();
 
-    // Collect tasks
+    // Collect tasks + hours
     const taskData = [];
     for (let i = 1; i <= (typeof MAX_TASKS !== 'undefined' ? MAX_TASKS : 5); i++) {
       const taskEl = document.getElementById(`task${i}`);
       const progEl = document.getElementById(`progress${i}`);
+      const hrsEl = document.getElementById(`hours${i}`);
       const card = document.getElementById(`task-card-${i}`);
       if (!card || card.style.display === 'none') continue;
       const text = taskEl.value.trim();
       const pct = parseInt(progEl.value);
+      const hrs = hrsEl ? (parseFloat(hrsEl.value) || 0) : 0;
       if (!text && i > 1) continue;
-      taskData.push({ text: text || '(enter task name)', pct });
+      taskData.push({ text: text || '(enter task name)', pct, hrs });
     }
 
     const progressVals = taskData.map(t => t.pct);
@@ -768,7 +770,7 @@
     document.getElementById('ep-week').style.color = '#3a5070';
 
     let html = '';
-    taskData.forEach(({text, pct}) => {
+    taskData.forEach(({text, pct, hrs}) => {
       const s = getStatus(pct);
       html += `<div style="background:${s.bg};border-left:4px solid ${s.color};border-radius:8px;padding:11px 14px;margin-bottom:10px;">
         <div style="font-size:13px;font-weight:600;color:#f0f0f2;margin-bottom:7px;">${escHTML(text)}</div>
@@ -776,7 +778,7 @@
           <div style="background:${s.color};width:${pct}%;height:5px;border-radius:999px;"></div>
         </div>
         <div style="font-size:11px;color:#55555f;margin-top:5px;display:flex;justify-content:space-between;">
-          <span style="color:${s.textColor};">${s.label}</span><span>${pct}%</span>
+          <span style="color:${s.textColor};">${s.label}</span><span>${pct}%${hrs > 0 ? ` · ${hrs}h` : ``}</span>
         </div>
       </div>`;
     });
@@ -807,7 +809,7 @@
       html += `<div style="padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:12px;color:#1e293b;">${escHTML(text)}</span>
         <span style="font-size:11px;font-weight:700;color:${s.color};white-space:nowrap;">
-          ${pct}%
+          ${pct}%${hrs > 0 ? ` · ${hrs}h` : ``}
           <span style="display:inline-block;width:44px;height:3px;background:#e2e8f0;border-radius:2px;vertical-align:middle;margin-left:6px;">
             <span style="display:block;width:${pct}%;height:3px;background:${s.color};border-radius:2px;"></span>
           </span>
@@ -839,7 +841,7 @@
       html += `<div style="background:${s.bg};border-radius:8px;padding:10px 14px;margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
           <span style="font-size:12px;font-weight:700;color:#1a1a2e;">${escHTML(text)}</span>
-          <span style="font-size:12px;font-weight:700;color:${s.color};">${pct}%</span>
+          <span style="font-size:12px;font-weight:700;color:${s.color};">${pct}%${hrs > 0 ? ` · ${hrs}h` : ``}</span>
         </div>
         <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:5px;">
           <div style="background:${s.color};width:${pct}%;height:5px;border-radius:999px;"></div>
@@ -951,6 +953,11 @@
         const tc = taskCount;
         if (taskEl) taskEl.addEventListener('input', () => updateCharCount(tc));
         if (progEl) progEl.addEventListener('input', () => updateSlider(tc));
+        // Show hours field if Pro
+        const nudge = document.getElementById('proNudge');
+        const isPro = nudge && nudge.style.display === 'none';
+        const hw = document.querySelector('#task-card-' + taskCount + ' .hours-wrap');
+        if (hw) hw.style.display = isPro ? 'flex' : 'none';
       }
       if (taskCount >= MAX_TASKS) this.style.display = 'none';
     }
@@ -1036,10 +1043,15 @@
     if (nextWeekWrap) nextWeekWrap.style.display = isPro ? 'block' : 'none';
     if (pdfWrap) pdfWrap.style.display = isPro ? 'block' : 'none';
 
-    // Show hours fields for all tasks
+    // Show hours fields only on visible task cards
     for (let i = 1; i <= 5; i++) {
+      const taskCard = document.getElementById('task-card-' + i);
       const hw = document.querySelector('#task-card-' + i + ' .hours-wrap');
-      if (hw) hw.style.display = isPro ? 'flex' : 'none';
+      if (hw) {
+        // Only show if the task card itself is visible
+        const cardVisible = taskCard && taskCard.style.display !== 'none';
+        hw.style.display = (isPro && cardVisible) ? 'flex' : 'none';
+      }
     }
     updateClientProjectVisibility();
   }
