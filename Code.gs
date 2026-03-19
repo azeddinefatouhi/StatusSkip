@@ -62,6 +62,11 @@ function doPost(e) {
           formParams.extraEmails = [];
         }
         formParams.notes = formParams.notes || '';
+        formParams.nextWeekPlan = formParams.nextWeekPlan || '';
+        formParams.clientProject = formParams.clientProject || '';
+        try {
+          formParams.hours = JSON.parse(formParams.hours || '[]');
+        } catch(e) { formParams.hours = []; }
         return processReport(formParams);
       }
     }
@@ -80,6 +85,9 @@ function processReport(params) {
   try {
     const { userName, userEmail, managerEmail, tasks, progress } = params;
     const notes = (params.notes || '').trim();
+    const nextWeekPlan = (params.nextWeekPlan || '').trim();
+    const clientProject = (params.clientProject || '').trim();
+    const hours = Array.isArray(params.hours) ? params.hours.map(h => parseFloat(h) || 0) : [];
     const extraEmails = Array.isArray(params.extraEmails) ? params.extraEmails.filter(e => isValidEmail(e)) : [];
 
     // --- Validate ---
@@ -124,7 +132,7 @@ function processReport(params) {
     const template = isPro ? requestedTemplate : 'standard'; // free users always get standard
 
     // --- Generate & send email ---
-    const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail, isPro, template, notes);
+    const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail, isPro, template, notes, hours, nextWeekPlan, clientProject);
     const subject = `Weekly Update: ${cleanName} — ${getWeekString()}`;
 
     GmailApp.sendEmail(cleanManager, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
@@ -294,16 +302,16 @@ function activateProManually(email) {
 // EMAIL HTML GENERATOR
 // ================================================================
 
-function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template, notes) {
+function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template, notes, hours, nextWeekPlan, clientProject) {
   const isFree = !isProUser;
   const tpl = template || 'standard';
 
   // Route to correct template for Pro users
-  if (!isFree && tpl === 'executive') return generateExecutiveHTML(name, tasks, progress, userEmail, notes);
-  if (!isFree && tpl === 'freelancer') return generateFreelancerHTML(name, tasks, progress, userEmail, notes);
+  if (!isFree && tpl === 'executive') return generateExecutiveHTML(name, tasks, progress, userEmail, notes, hours, nextWeekPlan);
+  if (!isFree && tpl === 'freelancer') return generateFreelancerHTML(name, tasks, progress, userEmail, notes, hours, nextWeekPlan, clientProject);
   // Default: Standard template (below)
   const week = getWeekString();
-  const taskRows = tasks.map((task, i) => {
+  const taskRows = tasks.map((task, i) => { // i is 0-based
     const pct = progress[i] || 0;
     const c = getStatusColors(pct);
     return `
@@ -315,7 +323,7 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
         </div>
         <div style="margin-top:6px;display:table;width:100%;">
           <span style="display:table-cell;font-size:12px;color:${c.text};">${c.label}</span>
-          <span style="display:table-cell;text-align:right;font-size:12px;color:#6b7280;">${pct}%</span>
+          <span style="display:table-cell;text-align:right;font-size:12px;color:#6b7280;">${pct}%${hours && hours[i] > 0 ? ' &nbsp;·&nbsp; ' + hours[i] + 'h' : ''}</span>
         </div>
       </div>
     </td></tr>`;
@@ -379,10 +387,19 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
 
   <!-- NOTES / BLOCKERS -->
   ${notes ? `
-  <tr><td style="padding:0 36px 24px;">
+  <tr><td style="padding:0 36px 16px;">
     <div style="background:#fffbeb;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:14px 18px;">
       <div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Notes &amp; Blockers</div>
       <div style="font-size:14px;color:#374151;line-height:1.6;">${escHtml(notes)}</div>
+    </div>
+  </td></tr>` : ''}
+
+  <!-- NEXT WEEK PREVIEW -->
+  ${nextWeekPlan ? `
+  <tr><td style="padding:0 36px 24px;">
+    <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:0 8px 8px 0;padding:14px 18px;">
+      <div style="font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Next Week</div>
+      <div style="font-size:14px;color:#374151;line-height:1.6;white-space:pre-line;">${escHtml(nextWeekPlan)}</div>
     </div>
   </td></tr>` : ''}
 
@@ -405,10 +422,10 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
 </html>`;
 }
 
-function generateExecutiveHTML(name, tasks, progress, userEmail, notes) {
+function generateExecutiveHTML(name, tasks, progress, userEmail, notes, hours, nextWeekPlan) {
   const week = getWeekString();
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
-  const taskRows = tasks.map((task, i) => {
+  const taskRows = tasks.map((task, i) => { // i is 0-based
     const pct = progress[i] || 0;
     const c = getStatusColors(pct);
     return `<tr>
@@ -445,10 +462,16 @@ function generateExecutiveHTML(name, tasks, progress, userEmail, notes) {
       </tr>
     </table>
   </td></tr>
-  ${notes ? `<tr><td style="padding:0 40px 20px;">
+  ${notes ? `<tr><td style="padding:0 40px 12px;">
     <div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 6px 6px 0;">
       <div style="font-size:10px;font-weight:700;color:#b45309;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Notes &amp; Blockers</div>
       <div style="font-size:13px;color:#374151;line-height:1.5;">${escHtml(notes)}</div>
+    </div>
+  </td></tr>` : ''}
+  ${nextWeekPlan ? `<tr><td style="padding:0 40px 20px;">
+    <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <div style="font-size:10px;font-weight:700;color:#15803d;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Next Week</div>
+      <div style="font-size:13px;color:#374151;line-height:1.5;white-space:pre-line;">${escHtml(nextWeekPlan)}</div>
     </div>
   </td></tr>` : ''}
   <tr><td style="padding:16px 40px;border-top:1px solid #f1f5f9;font-size:11px;color:#cbd5e1;">
@@ -460,7 +483,7 @@ function generateExecutiveHTML(name, tasks, progress, userEmail, notes) {
 </body></html>`;
 }
 
-function generateFreelancerHTML(name, tasks, progress, userEmail, notes) {
+function generateFreelancerHTML(name, tasks, progress, userEmail, notes, hours, nextWeekPlan, clientProject) {
   const week = getWeekString();
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
   const onTrack = progress.filter(p => p >= 80).length;
@@ -489,7 +512,7 @@ function generateFreelancerHTML(name, tasks, progress, userEmail, notes) {
 <tr><td>
 <table width="580" align="center" cellpadding="0" cellspacing="0" style="max-width:580px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
   <tr><td style="background:#1a1a2e;padding:28px 36px;">
-    <div style="font-size:10px;color:#4a5568;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Client Status Report</div>
+    <div style="font-size:10px;color:#4a5568;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">${clientProject ? escHtml(clientProject) : 'Client Status Report'}</div>
     <div style="font-size:24px;font-weight:700;color:#fff;">${escHtml(name)}</div>
     <div style="font-size:12px;color:#4a5568;margin-top:4px;">${week}</div>
   </td></tr>
@@ -510,10 +533,16 @@ function generateFreelancerHTML(name, tasks, progress, userEmail, notes) {
       </div>
     </div>
   </td></tr>
-  ${notes ? `<tr><td style="padding:0 36px 16px;">
+  ${notes ? `<tr><td style="padding:0 36px 10px;">
     <div style="background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 8px 8px 0;padding:12px 16px;">
       <div style="font-size:10px;font-weight:700;color:#b45309;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Notes &amp; Blockers</div>
       <div style="font-size:13px;color:#374151;line-height:1.5;">${escHtml(notes)}</div>
+    </div>
+  </td></tr>` : ''}
+  ${nextWeekPlan ? `<tr><td style="padding:0 36px 16px;">
+    <div style="background:#f0fdf4;border-left:3px solid #16a34a;border-radius:0 8px 8px 0;padding:12px 16px;">
+      <div style="font-size:10px;font-weight:700;color:#15803d;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Next Week</div>
+      <div style="font-size:13px;color:#374151;line-height:1.5;white-space:pre-line;">${escHtml(nextWeekPlan)}</div>
     </div>
   </td></tr>` : ''}
   <tr><td style="padding:14px 36px;border-top:1px solid #f1f5f9;font-size:11px;color:#94a3b8;">

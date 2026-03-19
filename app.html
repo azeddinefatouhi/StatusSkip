@@ -306,6 +306,13 @@
       <div class="field-error" id="err-manager">Please enter a valid manager email</div>
     </div>
 
+    <!-- Client project name (Pro - Freelancer template only) -->
+    <div id="clientProjectWrap" style="display:none;" class="field">
+      <label for="clientProject">Client / project name <span style="font-size:10px;color:var(--text3);font-weight:400;">(shown on Freelancer template)</span></label>
+      <input type="text" id="clientProject" placeholder="e.g. Acme Corp — Website Redesign" maxlength="80"
+        oninput="updatePreview()">
+    </div>
+
     <!-- Additional recipients (Pro only) -->
     <div id="extraRecipientsWrap" style="display:none;">
       <div id="extraRecipients"></div>
@@ -334,6 +341,12 @@
         <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val1">50%</span></div>
         <input type="range" id="progress1" min="0" max="100" value="50" step="5">
       </div>
+      <div class="hours-wrap pro-only" style="display:none;margin-top:8px;">
+        <label style="font-size:11px;color:var(--text3);margin-right:8px;">Hours spent:</label>
+        <input type="number" id="hours1" min="0" max="99" step="0.5" placeholder="0" oninput="updatePreview()"
+          style="width:70px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'Geist',sans-serif;outline:none;">
+        <span style="font-size:11px;color:var(--text3);margin-left:6px;">hrs</span>
+      </div>
     </div>
 
     <!-- Tasks 2-5 (hidden by default, with delete button) -->
@@ -353,6 +366,12 @@
         <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val2">50%</span></div>
         <input type="range" id="progress2" min="0" max="100" value="50" step="5">
       </div>
+      <div class="hours-wrap pro-only" style="display:none;margin-top:8px;">
+        <label style="font-size:11px;color:var(--text3);margin-right:8px;">Hours spent:</label>
+        <input type="number" id="hours2" min="0" max="99" step="0.5" placeholder="0" oninput="updatePreview()"
+          style="width:70px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'Geist',sans-serif;outline:none;">
+        <span style="font-size:11px;color:var(--text3);margin-left:6px;">hrs</span>
+      </div>
     </div>
 
     <div class="task-card" id="task-card-3" style="display:none">
@@ -370,6 +389,12 @@
       <div class="slider-wrap">
         <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val3">50%</span></div>
         <input type="range" id="progress3" min="0" max="100" value="50" step="5">
+      </div>
+      <div class="hours-wrap pro-only" style="display:none;margin-top:8px;">
+        <label style="font-size:11px;color:var(--text3);margin-right:8px;">Hours spent:</label>
+        <input type="number" id="hours3" min="0" max="99" step="0.5" placeholder="0" oninput="updatePreview()"
+          style="width:70px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'Geist',sans-serif;outline:none;">
+        <span style="font-size:11px;color:var(--text3);margin-left:6px;">hrs</span>
       </div>
     </div>
 
@@ -389,6 +414,12 @@
         <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val4">50%</span></div>
         <input type="range" id="progress4" min="0" max="100" value="50" step="5">
       </div>
+      <div class="hours-wrap pro-only" style="display:none;margin-top:8px;">
+        <label style="font-size:11px;color:var(--text3);margin-right:8px;">Hours spent:</label>
+        <input type="number" id="hours4" min="0" max="99" step="0.5" placeholder="0" oninput="updatePreview()"
+          style="width:70px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'Geist',sans-serif;outline:none;">
+        <span style="font-size:11px;color:var(--text3);margin-left:6px;">hrs</span>
+      </div>
     </div>
 
     <div class="task-card" id="task-card-5" style="display:none">
@@ -407,12 +438,26 @@
         <div class="slider-header"><span class="slider-label">Progress</span><span class="slider-val" id="val5">50%</span></div>
         <input type="range" id="progress5" min="0" max="100" value="50" step="5">
       </div>
+      <div class="hours-wrap pro-only" style="display:none;margin-top:8px;">
+        <label style="font-size:11px;color:var(--text3);margin-right:8px;">Hours spent:</label>
+        <input type="number" id="hours5" min="0" max="99" step="0.5" placeholder="0" oninput="updatePreview()"
+          style="width:70px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'Geist',sans-serif;outline:none;">
+        <span style="font-size:11px;color:var(--text3);margin-left:6px;">hrs</span>
+      </div>
     </div>
 
     <button class="add-task-btn" id="addTask2Btn">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add another task
     </button>
+
+    <!-- CLIENT/PROJECT NAME (Pro - Freelancer) -->
+    <div id="clientProjectWrap" style="display:none;">
+      <div class="divider"></div>
+      <div class="section-label">Client / Project <span style="font-size:10px;color:var(--text3);font-weight:400;letter-spacing:0;text-transform:none;">(Freelancer template)</span></div>
+      <div class="field"><label for="clientProject">Project or client name shown in the email header</label>
+        <input type="text" id="clientProject" placeholder="e.g. Acme Corp Website Redesign" maxlength="80" oninput="updatePreview()" style="width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></div>
+    </div>
 
     <!-- NOTES / BLOCKERS -->
     <div class="divider"></div>
@@ -424,6 +469,26 @@
         onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"
         oninput="updatePreview()"></textarea>
       <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:3px;"><span id="notesCount">0</span>/500</div>
+    </div>
+
+    <!-- NEXT WEEK PREVIEW (Pro only) -->
+    <div id="nextWeekWrap" style="display:none;" class="field">
+      <label for="nextWeekPlan">Next week I'm focusing on <span style="font-size:10px;color:var(--text3);font-weight:400;">(optional — Pro only)</span></label>
+      <textarea id="nextWeekPlan" placeholder="e.g.&#10;• Complete the API integration&#10;• Start user testing phase&#10;• Review client feedback" maxlength="400"
+        style="width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;resize:vertical;min-height:80px;transition:border-color .2s;"
+        onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"
+        oninput="updatePreview()"></textarea>
+      <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:3px;"><span id="nextWeekCount">0</span>/400</div>
+    </div>
+
+    <!-- NEXT WEEK (Pro) -->
+    <div id="nextWeekWrap" style="display:none;">
+      <div class="divider"></div>
+      <div class="section-label">Next week <span style="font-size:10px;color:var(--text3);font-weight:400;letter-spacing:0;text-transform:none;">(optional)</span></div>
+      <div class="field"><label for="nextWeek">What are you focusing on next week?</label>
+        <textarea id="nextWeek" placeholder="e.g. Complete the API integration, kick off user testing." maxlength="400" oninput="document.getElementById('nextWeekCount').textContent=this.value.length;updatePreview();" style="width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;resize:vertical;min-height:70px;" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:3px;"><span id="nextWeekCount">0</span>/400</div>
+      </div>
     </div>
 
     <div class="divider"></div>
@@ -505,21 +570,25 @@
     <h2 style="font-family:'Instrument Serif',serif;font-size:26px;color:#f0f0f2;margin-bottom:10px;font-weight:400;">Upgrade to Pro</h2>
     <p style="font-size:14px;color:#9090a0;line-height:1.7;margin-bottom:20px;">Get the full StatusSkip experience for <strong style="color:#f0f0f2;">$7/month</strong>.</p>
     <div style="text-align:left;background:rgba(255,255,255,0.03);border-radius:10px;padding:16px 20px;margin-bottom:24px;">
-      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:5px 0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         Remove "Sent via StatusSkip" footer
       </div>
-      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:5px 0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Executive &amp; Freelancer email templates
+        All 3 templates + hours logged per task
       </div>
-      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:5px 0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Weekly reminder emails every Friday
+        Next week preview section in every report
       </div>
-      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:6px 0;">
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:5px 0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Send to multiple managers at once
+        PDF download + weekly bookmark link
+      </div>
+      <div style="font-size:13px;color:#9090a0;display:flex;align-items:center;gap:10px;padding:5px 0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4f564" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Multiple managers + weekly reminders
       </div>
     </div>
     <a href="index.html#pricing" style="display:block;background:#d4f564;color:#0c0c0f;font-weight:700;font-size:15px;padding:14px;border-radius:10px;text-decoration:none;margin-bottom:12px;">Upgrade to Pro — $7/month</a>
@@ -541,6 +610,23 @@
   <div class="success-actions">
     <a href="app.html" class="btn-another" id="sendAnotherBtn">Send another →</a>
     <button class="btn-share" onclick="shareProduct()">Share StatusSkip</button>
+  </div>
+  <div id="pdfDownloadWrap" style="display:none;margin-top:12px;">
+    <button onclick="downloadPDF()" style="display:inline-flex;align-items:center;gap:8px;background:none;border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:'Geist',sans-serif;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download PDF
+    </button>
+  </div>
+  <!-- Pro actions -->
+  <div id="proSuccessActions" style="display:none;margin-top:16px;display:none;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <button onclick="downloadPDF()" style="display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;cursor:pointer;font-family:'Geist',sans-serif;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download PDF
+    </button>
+    <button onclick="copyBookmarkLink()" id="bookmarkBtn" style="display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;cursor:pointer;font-family:'Geist',sans-serif;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+      Copy weekly link
+    </button>
   </div>
   <p id="proBookmarkHint" style="display:none;font-size:12px;color:var(--text3);margin-top:16px;">
     Pro tip: <a id="proBookmarkLink" href="#" style="color:var(--accent);text-decoration:none;" onclick="copyProLink(event)">Copy your Pro bookmark link</a> — open it anytime to skip straight to your Pro workspace.
@@ -939,11 +1025,32 @@
     const upgradeNudge = document.getElementById('proUpgradeNudge');
     const proIndicator = document.getElementById('proIndicator');
     const extraWrap = document.getElementById('extraRecipientsWrap');
+    const nextWeekWrap = document.getElementById('nextWeekWrap');
+    const pdfWrap = document.getElementById('pdfDownloadWrap');
+
     if (nudge) nudge.style.display = isPro ? 'none' : 'flex';
     if (tplSelector) tplSelector.style.display = isPro ? 'block' : 'none';
     if (upgradeNudge) upgradeNudge.style.display = isPro ? 'none' : 'block';
     if (proIndicator) proIndicator.style.display = isPro ? 'inline-block' : 'none';
     if (extraWrap) extraWrap.style.display = isPro ? 'block' : 'none';
+    if (nextWeekWrap) nextWeekWrap.style.display = isPro ? 'block' : 'none';
+    if (pdfWrap) pdfWrap.style.display = isPro ? 'block' : 'none';
+
+    // Show hours fields for all tasks
+    for (let i = 1; i <= 5; i++) {
+      const hw = document.querySelector('#task-card-' + i + ' .hours-wrap');
+      if (hw) hw.style.display = isPro ? 'flex' : 'none';
+    }
+    updateClientProjectVisibility();
+  }
+
+  function updateClientProjectVisibility() {
+    const clientWrap = document.getElementById('clientProjectWrap');
+    if (!clientWrap) return;
+    const nudge = document.getElementById('proNudge');
+    const isPro = nudge && nudge.style.display === 'none';
+    const tpl = typeof getSelectedTemplate === 'function' ? getSelectedTemplate() : 'standard';
+    clientWrap.style.display = (isPro && tpl === 'freelancer') ? 'block' : 'none';
   }
 
   ['userName', 'userEmail', 'managerEmail'].forEach(id => {
@@ -967,10 +1074,10 @@
   // Update preview when template changes
   document.querySelectorAll('input[name="template"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      // Update active button style
       document.querySelectorAll('.tpl-btn').forEach(btn => btn.classList.remove('tpl-active'));
       const id = 'tpl-' + radio.value;
       if (document.getElementById(id)) document.getElementById(id).classList.add('tpl-active');
+      updateClientProjectVisibility();
       updatePreview();
     });
   });
@@ -1020,7 +1127,18 @@
     const notesEl = document.getElementById('reportNotes');
     const notes = notesEl ? notesEl.value.trim() : '';
 
-    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template, notes, extraEmails };
+    // Collect hours, client, next week (Pro)
+    const hours = [];
+    for (let i = 1; i <= MAX_TASKS; i++) {
+      const hEl = document.getElementById('hours' + i);
+      hours.push(hEl ? (parseFloat(hEl.value) || 0) : 0);
+    }
+    const clientProjectEl = document.getElementById('clientProject');
+    const clientProject = clientProjectEl ? clientProjectEl.value.trim() : '';
+    const nextWeekEl = document.getElementById('nextWeek');
+    const nextWeek = nextWeekEl ? nextWeekEl.value.trim() : '';
+
+    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template, notes, extraEmails, hours, clientProject, nextWeek };
 
     try {
       let sent = false;
@@ -1039,7 +1157,10 @@
           template: payload.template || 'standard',
           notes: payload.notes || '',
           extraEmails: JSON.stringify(payload.extraEmails || []),
-        });
+          hours: JSON.stringify(payload.hours || []),
+          clientProject: payload.clientProject || '',
+          nextWeek: payload.nextWeek || '',
+        })
 
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -1068,12 +1189,27 @@
       const nextUrl = `${baseUrl}?name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}${userEmail ? '&email=' + encodeURIComponent(userEmail) : ''}`;
       document.getElementById('sendAnotherBtn').href = nextUrl;
 
-      // Cache Pro status and update UI after successful send
+      // Cache Pro status
       const nudge = document.getElementById('proNudge');
-      if (nudge && nudge.style.display === 'none') {
+      const userIsPro = nudge && nudge.style.display === 'none';
+      if (userIsPro) {
         try { localStorage.setItem('ss_pro_' + btoa(userEmail.toLowerCase()), '1'); } catch(e) {}
       }
-
+      const previewCard = document.getElementById('previewCard');
+      if (previewCard) lastReportHTML = previewCard.innerHTML;
+      const bookmarkHint = document.getElementById('proBookmarkHint');
+      const bookmarkLink = document.getElementById('proBookmarkLink');
+      if (bookmarkHint && bookmarkLink && userIsPro) {
+        bookmarkLink.onclick = (e) => {
+          e.preventDefault();
+          const link = generateBookmarkLink();
+          navigator.clipboard.writeText(link).then(() => {
+            bookmarkLink.textContent = 'Copied!';
+            setTimeout(() => { bookmarkLink.textContent = 'Copy your Pro bookmark link'; }, 2000);
+          }).catch(() => { prompt('Copy this link:', link); });
+        };
+        bookmarkHint.style.display = 'block';
+      }
       document.getElementById('successScreen').classList.add('show');
 
     } catch (err) {
@@ -1096,9 +1232,57 @@
     });
   }
 
+  // ── PDF DOWNLOAD ──
+  function downloadPDF() {
+    const printWin = window.open('', '_blank');
+    if (!printWin) { alert('Please allow popups to download PDF.'); return; }
+    printWin.document.write(`<!DOCTYPE html><html><head>
+      <title>Status Report — ${lastReportName}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        @media print { body { margin: 0; } }
+      </style>
+    </head><body>${lastReportHTML}<script>window.onload=()=>{window.print();window.close();}<\/script></body></html>`);
+    printWin.document.close();
+  }
+
+  // ── BOOKMARK LINK ──
+  let bookmarkURL = '';
+  function copyBookmarkLink() {
+    if (!bookmarkURL) return;
+    navigator.clipboard.writeText(bookmarkURL).then(() => {
+      const btn = document.getElementById('bookmarkBtn');
+      if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = 'Copy weekly link'; }, 2000); }
+    }).catch(() => { prompt('Copy this link:', bookmarkURL); });
+  }
+
+  // ── NEXT WEEK COUNTER ──
+  const nextWeekEl = document.getElementById('nextWeekPlan');
+  if (nextWeekEl) {
+    nextWeekEl.addEventListener('input', () => {
+      const el = document.getElementById('nextWeekCount');
+      if (el) el.textContent = nextWeekEl.value.length;
+      updatePreview();
+    });
+  }
+
+  // Wire template change to update client project visibility
+  document.querySelectorAll('input[name="template"]').forEach(r => {
+    r.addEventListener('change', updateClientProjectVisibility);
+  });
+
   function shareProduct() {
     const text = encodeURIComponent('Just sent my weekly status report in 60 seconds with StatusSkip — up to 5 tasks, progress sliders, notes, one click send. Free to use: https://azeddinefatouhi.github.io/StatusSkip');
     window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
+  }
+
+  // ── FEATURE 5: PRE-FILLED BOOKMARK LINK ──
+  function generateBookmarkLink() {
+    const name = document.getElementById('userName').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const manager = document.getElementById('managerEmail').value.trim();
+    const base = window.location.origin + window.location.pathname;
+    return base + '?name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email) + '&manager=' + encodeURIComponent(manager);
   }
 
   // ── INIT ──
