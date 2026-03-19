@@ -485,9 +485,6 @@
     <div id="nextWeekWrap" style="display:none;">
       <div class="divider"></div>
       <div class="section-label">Next week <span style="font-size:10px;color:var(--text3);font-weight:400;letter-spacing:0;text-transform:none;">(optional)</span></div>
-      <div class="field"><label for="nextWeek">What are you focusing on next week?</label>
-        <textarea id="nextWeek" placeholder="e.g. Complete the API integration, kick off user testing." maxlength="400" oninput="document.getElementById('nextWeekCount').textContent=this.value.length;updatePreview();" style="width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;resize:vertical;min-height:70px;" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-        <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:3px;"><span id="nextWeekCount">0</span>/400</div>
       </div>
     </div>
 
@@ -611,14 +608,9 @@
     <a href="app.html" class="btn-another" id="sendAnotherBtn">Send another →</a>
     <button class="btn-share" onclick="shareProduct()">Share StatusSkip</button>
   </div>
-  <div id="pdfDownloadWrap" style="display:none;margin-top:12px;">
-    <button onclick="downloadPDF()" style="display:inline-flex;align-items:center;gap:8px;background:none;border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:'Geist',sans-serif;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download PDF
-    </button>
-  </div>
+
   <!-- Pro actions -->
-  <div id="proSuccessActions" style="display:none;margin-top:16px;display:none;gap:10px;flex-wrap:wrap;justify-content:center;">
+  <div id="proSuccessActions" style="display:none;margin-top:16px;gap:10px;flex-wrap:wrap;justify-content:center;">
     <button onclick="downloadPDF()" style="display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;cursor:pointer;font-family:'Geist',sans-serif;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Download PDF
@@ -1033,7 +1025,6 @@
     const proIndicator = document.getElementById('proIndicator');
     const extraWrap = document.getElementById('extraRecipientsWrap');
     const nextWeekWrap = document.getElementById('nextWeekWrap');
-    const pdfWrap = document.getElementById('pdfDownloadWrap');
 
     if (nudge) nudge.style.display = isPro ? 'none' : 'flex';
     if (tplSelector) tplSelector.style.display = isPro ? 'block' : 'none';
@@ -1041,7 +1032,6 @@
     if (proIndicator) proIndicator.style.display = isPro ? 'inline-block' : 'none';
     if (extraWrap) extraWrap.style.display = isPro ? 'block' : 'none';
     if (nextWeekWrap) nextWeekWrap.style.display = isPro ? 'block' : 'none';
-    if (pdfWrap) pdfWrap.style.display = isPro ? 'block' : 'none';
 
     // Show hours fields only on visible task cards
     for (let i = 1; i <= 5; i++) {
@@ -1106,13 +1096,18 @@
     const managerEmail = document.getElementById('managerEmail').value.trim();
 
     const tasks = [], progress = [];
+    const taskData2 = []; // for PDF
     for (let i = 1; i <= MAX_TASKS; i++) {
       const card = document.getElementById(`task-card-${i}`);
       if (!card || card.style.display === 'none') continue;
       const t = document.getElementById(`task${i}`).value.trim();
       if (!t && i > 1) continue;
+      const pct = parseInt(document.getElementById(`progress${i}`).value);
+      const hEl = document.getElementById(`hours${i}`);
+      const hrs = hEl ? (parseFloat(hEl.value) || 0) : 0;
       tasks.push(t);
-      progress.push(parseInt(document.getElementById(`progress${i}`).value));
+      progress.push(pct);
+      taskData2.push({ text: t, pct, hrs });
     }
 
     // Show loading
@@ -1147,10 +1142,10 @@
     }
     const clientProjectEl = document.getElementById('clientProject');
     const clientProject = clientProjectEl ? clientProjectEl.value.trim() : '';
-    const nextWeekEl = document.getElementById('nextWeek');
-    const nextWeek = nextWeekEl ? nextWeekEl.value.trim() : '';
+    const nextWeekPlanEl = document.getElementById('nextWeekPlan');
+    const nextWeekPlan = nextWeekPlanEl ? nextWeekPlanEl.value.trim() : '';
 
-    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template, notes, extraEmails, hours, clientProject, nextWeek };
+    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template, notes, extraEmails, hours, clientProject, nextWeekPlan };
 
     try {
       let sent = false;
@@ -1171,7 +1166,7 @@
           extraEmails: JSON.stringify(payload.extraEmails || []),
           hours: JSON.stringify(payload.hours || []),
           clientProject: payload.clientProject || '',
-          nextWeek: payload.nextWeek || '',
+          nextWeekPlan: payload.nextWeekPlan || '',
         })
 
         await fetch(APPS_SCRIPT_URL, {
@@ -1207,8 +1202,19 @@
       if (userIsPro) {
         try { localStorage.setItem('ss_pro_' + btoa(userEmail.toLowerCase()), '1'); } catch(e) {}
       }
-      const previewCard = document.getElementById('previewCard');
-      if (previewCard) lastReportHTML = previewCard.innerHTML;
+      // Store report data for PDF
+      const pVals = taskData2.map(t => t.pct);
+      lastReportData = {
+        name,
+        week: getWeekString(),
+        taskData: taskData2,
+        avg: pVals.length ? Math.round(pVals.reduce((a,b)=>a+b,0)/pVals.length) : 0,
+        onTrack: pVals.filter(p => p >= 80).length,
+        inProg: pVals.filter(p => p >= 50 && p < 80).length,
+        behind: pVals.filter(p => p < 50).length,
+        notes,
+        nextWeekPlan: nextWeekPlan || ''
+      };
       const bookmarkHint = document.getElementById('proBookmarkHint');
       const bookmarkLink = document.getElementById('proBookmarkLink');
       if (bookmarkHint && bookmarkLink && userIsPro) {
@@ -1245,16 +1251,76 @@
   }
 
   // ── PDF DOWNLOAD ──
+  // Store last sent report data for PDF
+  let lastReportData = null;
+
   function downloadPDF() {
+    if (!lastReportData) { alert('Send a report first to download it as PDF.'); return; }
+    const { name, week, taskData, avg, onTrack, inProg, behind, notes, nextWeekPlan } = lastReportData;
+
+    const taskRows = taskData.map(({text, pct, hrs}) => {
+      const color = pct >= 80 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
+      const label = pct >= 80 ? 'On Track' : pct >= 50 ? 'In Progress' : 'Behind';
+      const bg = pct >= 80 ? '#f0fdf4' : pct >= 50 ? '#fffbeb' : '#fef2f2';
+      return `<tr><td style="padding:0 0 10px 0;">
+        <div style="background:${bg};border-left:4px solid ${color};border-radius:0 6px 6px 0;padding:12px 16px;">
+          <div style="font-weight:700;color:#111;font-size:14px;margin-bottom:8px;">${text}</div>
+          <div style="background:#e5e7eb;border-radius:999px;height:6px;overflow:hidden;">
+            <div style="background:${color};width:${pct}%;height:6px;border-radius:999px;"></div>
+          </div>
+          <div style="margin-top:5px;display:flex;justify-content:space-between;font-size:12px;">
+            <span style="color:${color};">${label}</span>
+            <span style="color:#6b7280;">${pct}%${hrs > 0 ? ' · ' + hrs + 'h' : ''}</span>
+          </div>
+        </div>
+      </td></tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Status Report — ${name}</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #111; }
+      .wrap { max-width: 600px; margin: 0 auto; padding: 40px 24px; }
+      .header { background: #1a1a2e; color: #fff; padding: 28px 32px; border-radius: 8px 8px 0 0; }
+      .header .eyebrow { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
+      .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+      .header .week { font-size: 12px; color: #475569; }
+      .body { padding: 24px 0; }
+      .summary { background: #f8fafc; border-radius: 8px; padding: 16px; margin-top: 8px; display: flex; justify-content: space-around; text-align: center; }
+      .summary-item .num { font-size: 22px; font-weight: 700; }
+      .summary-item .lbl { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+      .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 6px; }
+      .notes-box { background: #fffbeb; border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 12px 14px; font-size: 13px; color: #374151; line-height: 1.6; }
+      .next-box { background: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 0 6px 6px 0; padding: 12px 14px; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-line; margin-top: 10px; }
+      .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #94a3b8; text-align: center; }
+      @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+    </style>
+    </head><body><div class="wrap">
+      <div class="header">
+        <div class="eyebrow">Weekly Status Report</div>
+        <h1>${name}</h1>
+        <div class="week">${week}</div>
+      </div>
+      <div class="body">
+        <table width="100%" cellpadding="0" cellspacing="0">${taskRows}</table>
+        <div class="summary">
+          <div class="summary-item"><div class="num">${avg}%</div><div class="lbl">AVG PROGRESS</div></div>
+          <div class="summary-item"><div class="num" style="color:#16a34a">${onTrack}</div><div class="lbl">ON TRACK</div></div>
+          <div class="summary-item"><div class="num" style="color:#d97706">${inProg}</div><div class="lbl">IN PROGRESS</div></div>
+          <div class="summary-item"><div class="num" style="color:#dc2626">${behind}</div><div class="lbl">BEHIND</div></div>
+        </div>
+        ${notes ? `<div class="section-title">Notes &amp; Blockers</div><div class="notes-box">${notes}</div>` : ''}
+        ${nextWeekPlan ? `<div class="section-title">Next Week</div><div class="next-box">${nextWeekPlan}</div>` : ''}
+      </div>
+      <div class="footer">Generated with StatusSkip &nbsp;·&nbsp; ${week}</div>
+    </div>
+    <script>window.onload = () => { window.print(); }<\/script>
+    </body></html>`;
+
     const printWin = window.open('', '_blank');
-    if (!printWin) { alert('Please allow popups to download PDF.'); return; }
-    printWin.document.write(`<!DOCTYPE html><html><head>
-      <title>Status Report — ${lastReportName}</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        @media print { body { margin: 0; } }
-      </style>
-    </head><body>${lastReportHTML}<script>window.onload=()=>{window.print();window.close();}<\/script></body></html>`);
+    if (!printWin) { alert('Please allow popups to download the PDF.'); return; }
+    printWin.document.write(html);
     printWin.document.close();
   }
 

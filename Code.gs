@@ -135,7 +135,7 @@ function processReport(params) {
     const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail, isPro, template, notes, hours, nextWeekPlan, clientProject);
     const subject = `Weekly Update: ${cleanName} — ${getWeekString()}`;
 
-    GmailApp.sendEmail(cleanManager, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
+    GmailApp.sendEmail(cleanManager, subject, buildPlainText(cleanName, cleanTasks, cleanProgress, isPro), {
       htmlBody: html,
       name: `${cleanName} via ${CONFIG.BRAND_NAME}`,
       replyTo: cleanUserEmail || cleanManager,
@@ -145,7 +145,7 @@ function processReport(params) {
     if (extraEmails.length > 0) {
       extraEmails.forEach(extraEmail => {
         try {
-          GmailApp.sendEmail(extraEmail, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
+          GmailApp.sendEmail(extraEmail, subject, buildPlainText(cleanName, cleanTasks, cleanProgress, isPro), {
             htmlBody: html,
             name: `${cleanName} via ${CONFIG.BRAND_NAME}`,
             replyTo: cleanUserEmail || cleanManager,
@@ -162,7 +162,7 @@ function processReport(params) {
         cleanUserEmail,
         `Your status report was sent — ${CONFIG.BRAND_NAME}`,
         '',
-        { htmlBody: generateConfirmationHTML(cleanName, cleanManager), name: CONFIG.BRAND_NAME }
+        { htmlBody: generateConfirmationHTML(cleanName, cleanManager, isPro), name: CONFIG.BRAND_NAME }
       );
     }
 
@@ -554,7 +554,8 @@ function generateFreelancerHTML(name, tasks, progress, userEmail, notes, hours, 
 </body></html>`;
 }
 
-function generateConfirmationHTML(name, managerEmail) {
+function generateConfirmationHTML(name, managerEmail, isPro) {
+  const isFree = !isPro;
   return `<!DOCTYPE html>
 <html><body style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:40px auto;color:#1a1a2e;padding:24px;">
   <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:16px;padding:36px;text-align:center;margin-bottom:24px;">
@@ -570,13 +571,13 @@ function generateConfirmationHTML(name, managerEmail) {
   <p style="font-size:14px;color:#374151;line-height:1.7;">See you next week!</p>
   <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
   <p style="font-size:12px;color:#9ca3af;text-align:center;">
-    Sent via <a href="${CONFIG.BRAND_URL}" style="color:#4f46e5;text-decoration:none;">${CONFIG.BRAND_NAME}</a>
-    — <a href="${CONFIG.UPGRADE_URL}" style="color:#4f46e5;text-decoration:none;">Upgrade to Pro</a>
+    ${isFree ? `Sent via <a href="${CONFIG.BRAND_URL}" style="color:#4f46e5;text-decoration:none;">${CONFIG.BRAND_NAME}</a> — <a href="${CONFIG.UPGRADE_URL}" style="color:#4f46e5;text-decoration:none;">Upgrade to Pro</a>` : ''}
   </p>
 </body></html>`;
 }
 
-function buildPlainText(name, tasks, progress) {
+function buildPlainText(name, tasks, progress, isProUser) {
+  const isFree = !isProUser;
   const week = getWeekString();
   let txt = `Weekly Status Report: ${name}\n${week}\n${'─'.repeat(40)}\n\n`;
   tasks.forEach((t, i) => {
@@ -585,7 +586,7 @@ function buildPlainText(name, tasks, progress) {
   });
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
   txt += `─────────────────────\nAverage progress: ${avg}%\n`;
-  txt += `\nSent via ${CONFIG.BRAND_NAME} (${CONFIG.BRAND_URL})`;
+  txt += isFree ? `\nSent via ${CONFIG.BRAND_NAME} (${CONFIG.BRAND_URL}) — Upgrade to Pro: ${CONFIG.UPGRADE_URL}` : `\nSent via ${CONFIG.BRAND_NAME}`;
   return txt;
 }
 
