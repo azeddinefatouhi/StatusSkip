@@ -55,11 +55,13 @@ function doPost(e) {
         try {
           formParams.tasks = JSON.parse(formParams.tasks || '[]');
           formParams.progress = JSON.parse(formParams.progress || '[]');
+          formParams.extraEmails = JSON.parse(formParams.extraEmails || '[]');
         } catch(e) {
           formParams.tasks = [];
           formParams.progress = [];
+          formParams.extraEmails = [];
         }
-        // Re-enter doPost logic with parsed params
+        formParams.notes = formParams.notes || '';
         return processReport(formParams);
       }
     }
@@ -77,6 +79,8 @@ function doPost(e) {
 function processReport(params) {
   try {
     const { userName, userEmail, managerEmail, tasks, progress } = params;
+    const notes = (params.notes || '').trim();
+    const extraEmails = Array.isArray(params.extraEmails) ? params.extraEmails.filter(e => isValidEmail(e)) : [];
 
     // --- Validate ---
     if (!userName || !userName.trim()) return err('Missing required field: userName');
@@ -120,7 +124,7 @@ function processReport(params) {
     const template = isPro ? requestedTemplate : 'standard'; // free users always get standard
 
     // --- Generate & send email ---
-    const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail, isPro, template);
+    const html = generateEmailHTML(cleanName, cleanTasks, cleanProgress, cleanUserEmail, isPro, template, notes);
     const subject = `Weekly Update: ${cleanName} — ${getWeekString()}`;
 
     GmailApp.sendEmail(cleanManager, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
@@ -128,6 +132,21 @@ function processReport(params) {
       name: `${cleanName} via ${CONFIG.BRAND_NAME}`,
       replyTo: cleanUserEmail || cleanManager,
     });
+
+    // --- Send to extra recipients (Pro) ---
+    if (extraEmails.length > 0) {
+      extraEmails.forEach(extraEmail => {
+        try {
+          GmailApp.sendEmail(extraEmail, subject, buildPlainText(cleanName, cleanTasks, cleanProgress), {
+            htmlBody: html,
+            name: `${cleanName} via ${CONFIG.BRAND_NAME}`,
+            replyTo: cleanUserEmail || cleanManager,
+          });
+        } catch(e) {
+          console.warn('Extra recipient failed: ' + extraEmail, e);
+        }
+      });
+    }
 
     // --- Confirmation copy ---
     if (cleanUserEmail && isValidEmail(cleanUserEmail)) {
@@ -262,13 +281,13 @@ function activateProManually(email) {
 // EMAIL HTML GENERATOR
 // ================================================================
 
-function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template) {
+function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template, notes) {
   const isFree = !isProUser;
   const tpl = template || 'standard';
 
   // Route to correct template for Pro users
-  if (!isFree && tpl === 'executive') return generateExecutiveHTML(name, tasks, progress, userEmail);
-  if (!isFree && tpl === 'freelancer') return generateFreelancerHTML(name, tasks, progress, userEmail);
+  if (!isFree && tpl === 'executive') return generateExecutiveHTML(name, tasks, progress, userEmail, notes);
+  if (!isFree && tpl === 'freelancer') return generateFreelancerHTML(name, tasks, progress, userEmail, notes);
   // Default: Standard template (below)
   const week = getWeekString();
   const taskRows = tasks.map((task, i) => {
@@ -345,6 +364,15 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
     </div>
   </td></tr>
 
+  <!-- NOTES / BLOCKERS -->
+  ${notes ? `
+  <tr><td style="padding:0 36px 24px;">
+    <div style="background:#fffbeb;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:14px 18px;">
+      <div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Notes &amp; Blockers</div>
+      <div style="font-size:14px;color:#374151;line-height:1.6;">${escHtml(notes)}</div>
+    </div>
+  </td></tr>` : ''}
+
   <!-- FOOTER -->
   <tr><td style="background:#f8fafc;padding:18px 36px;border-top:1px solid #f1f5f9;">
     <table width="100%" cellpadding="0" cellspacing="0"><tr>
@@ -364,7 +392,7 @@ function generateEmailHTML(name, tasks, progress, userEmail, isProUser, template
 </html>`;
 }
 
-function generateExecutiveHTML(name, tasks, progress, userEmail) {
+function generateExecutiveHTML(name, tasks, progress, userEmail, notes) {
   const week = getWeekString();
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
   const taskRows = tasks.map((task, i) => {
@@ -404,6 +432,12 @@ function generateExecutiveHTML(name, tasks, progress, userEmail) {
       </tr>
     </table>
   </td></tr>
+  ${notes ? `<tr><td style="padding:0 40px 20px;">
+    <div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <div style="font-size:10px;font-weight:700;color:#b45309;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Notes &amp; Blockers</div>
+      <div style="font-size:13px;color:#374151;line-height:1.5;">${escHtml(notes)}</div>
+    </div>
+  </td></tr>` : ''}
   <tr><td style="padding:16px 40px;border-top:1px solid #f1f5f9;font-size:11px;color:#cbd5e1;">
     ${userEmail ? `Reply to reach ${escHtml(name)}.` : ''}
   </td></tr>
@@ -413,7 +447,7 @@ function generateExecutiveHTML(name, tasks, progress, userEmail) {
 </body></html>`;
 }
 
-function generateFreelancerHTML(name, tasks, progress, userEmail) {
+function generateFreelancerHTML(name, tasks, progress, userEmail, notes) {
   const week = getWeekString();
   const avg = Math.round(progress.reduce((a, b) => a + b, 0) / progress.length);
   const onTrack = progress.filter(p => p >= 80).length;
@@ -463,6 +497,12 @@ function generateFreelancerHTML(name, tasks, progress, userEmail) {
       </div>
     </div>
   </td></tr>
+  ${notes ? `<tr><td style="padding:0 36px 16px;">
+    <div style="background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 8px 8px 0;padding:12px 16px;">
+      <div style="font-size:10px;font-weight:700;color:#b45309;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Notes &amp; Blockers</div>
+      <div style="font-size:13px;color:#374151;line-height:1.5;">${escHtml(notes)}</div>
+    </div>
+  </td></tr>` : ''}
   <tr><td style="padding:14px 36px;border-top:1px solid #f1f5f9;font-size:11px;color:#94a3b8;">
     ${userEmail ? `Reply to reach ${escHtml(name)}.` : ''}
   </td></tr>
@@ -519,11 +559,13 @@ function sendWeeklyReminders() {
   const sheet = getOrCreateSheet(CONFIG.SHEET_NAME_SUBMISSIONS);
   const data = sheet.getDataRange().getValues();
 
-  // Collect unique user emails that have a confirmed userEmail stored
+  // Collect unique user emails — Pro users only get reminders
   const userEmails = new Set();
   for (let i = 1; i < data.length; i++) {
     const email = data[i][2]; // column C = userEmail
-    if (email && isValidEmail(email)) userEmails.add(email.toLowerCase());
+    if (email && isValidEmail(email) && isProUser(email)) {
+      userEmails.add(email.toLowerCase());
+    }
   }
 
   userEmails.forEach(email => {
@@ -738,4 +780,37 @@ function debugProUser() {
   const data = sheet.getDataRange().getValues();
   Logger.log('Pro Users sheet rows: ' + data.length);
   data.forEach((row, i) => Logger.log('Row ' + i + ': ' + JSON.stringify(row)));
+}
+
+// ================================================================
+// WEEKLY REMINDERS SETUP
+// ================================================================
+// Run setupWeeklyReminderTrigger() ONCE from the Apps Script editor
+// to activate Friday reminder emails for all Pro users.
+
+function setupWeeklyReminderTrigger() {
+  // Delete any existing reminder triggers first
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === 'sendWeeklyReminders') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  });
+
+  // Create new weekly trigger — every Friday at 4-5 PM
+  ScriptApp.newTrigger('sendWeeklyReminders')
+    .timeBased()
+    .onWeekDay(ScriptApp.WeekDay.FRIDAY)
+    .atHour(16)
+    .create();
+
+  Logger.log('Weekly reminder trigger created. Reminders will send every Friday at 4-5 PM.');
+}
+
+function removeWeeklyReminderTrigger() {
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === 'sendWeeklyReminders') {
+      ScriptApp.deleteTrigger(trigger);
+      Logger.log('Reminder trigger removed.');
+    }
+  });
 }

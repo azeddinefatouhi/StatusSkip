@@ -306,6 +306,17 @@
       <div class="field-error" id="err-manager">Please enter a valid manager email</div>
     </div>
 
+    <!-- Additional recipients (Pro only) -->
+    <div id="extraRecipientsWrap" style="display:none;">
+      <div id="extraRecipients"></div>
+      <button type="button" id="addRecipientBtn"
+        style="width:100%;padding:9px;border-radius:8px;border:1px dashed rgba(212,245,100,0.3);background:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s;"
+        onmouseover="this.style.background='rgba(212,245,100,0.05)'" onmouseout="this.style.background='none'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add another recipient
+      </button>
+    </div>
+
     <div class="divider"></div>
 
     <!-- SECTION 2: Tasks -->
@@ -402,6 +413,18 @@
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add another task
     </button>
+
+    <!-- NOTES / BLOCKERS -->
+    <div class="divider"></div>
+    <div class="section-label">Notes &amp; blockers <span style="font-size:10px;color:var(--text3);font-weight:400;letter-spacing:0;text-transform:none;">(optional)</span></div>
+    <div class="field">
+      <label for="reportNotes">Anything blocking you or worth highlighting?</label>
+      <textarea id="reportNotes" placeholder="e.g. Waiting on design approval before proceeding with task 2. No major blockers otherwise." maxlength="500"
+        style="width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;resize:vertical;min-height:80px;transition:border-color .2s;"
+        onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"
+        oninput="updatePreview()"></textarea>
+      <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:3px;"><span id="notesCount">0</span>/500</div>
+    </div>
 
     <div class="divider"></div>
 
@@ -786,6 +809,41 @@
     }
   }
 
+  // ── MULTIPLE RECIPIENTS (Pro) ──
+  let extraRecipientCount = 0;
+  const addRecipientBtn = document.getElementById('addRecipientBtn');
+  if (addRecipientBtn) {
+    addRecipientBtn.addEventListener('click', () => {
+      if (extraRecipientCount >= 4) return;
+      extraRecipientCount++;
+      const wrap = document.getElementById('extraRecipients');
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;';
+      div.innerHTML = `
+        <input type="email" placeholder="recipient@company.com"
+          class="extra-recipient" autocomplete="off"
+          style="flex:1;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Geist',sans-serif;outline:none;"
+          onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'">
+        <button type="button" onclick="this.parentElement.remove();extraRecipientCount--;document.getElementById('addRecipientBtn').style.display='flex';"
+          style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;transition:color .15s;"
+          onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>`;
+      wrap.appendChild(div);
+      if (extraRecipientCount >= 4) addRecipientBtn.style.display = 'none';
+    });
+  }
+
+  // ── NOTES COUNTER ──
+  const notesEl = document.getElementById('reportNotes');
+  if (notesEl) {
+    notesEl.addEventListener('input', () => {
+      const el = document.getElementById('notesCount');
+      if (el) el.textContent = notesEl.value.length;
+      updatePreview();
+    });
+  }
+
   // ── ADD TASK ──
   const MAX_TASKS = 5;
 
@@ -880,11 +938,12 @@
     const tplSelector = document.getElementById('templateSelector');
     const upgradeNudge = document.getElementById('proUpgradeNudge');
     const proIndicator = document.getElementById('proIndicator');
-    const upgradeModal = document.getElementById('upgradeModal');
+    const extraWrap = document.getElementById('extraRecipientsWrap');
     if (nudge) nudge.style.display = isPro ? 'none' : 'flex';
     if (tplSelector) tplSelector.style.display = isPro ? 'block' : 'none';
     if (upgradeNudge) upgradeNudge.style.display = isPro ? 'none' : 'block';
     if (proIndicator) proIndicator.style.display = isPro ? 'inline-block' : 'none';
+    if (extraWrap) extraWrap.style.display = isPro ? 'block' : 'none';
   }
 
   ['userName', 'userEmail', 'managerEmail'].forEach(id => {
@@ -949,7 +1008,19 @@
 
     const selectedTemplate = document.querySelector('input[name="template"]:checked');
     const template = selectedTemplate ? selectedTemplate.value : 'standard';
-    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template };
+
+    // Collect extra recipients (Pro)
+    const extraEmails = [];
+    document.querySelectorAll('.extra-recipient').forEach(el => {
+      const v = el.value.trim();
+      if (v && isValidEmail(v)) extraEmails.push(v);
+    });
+
+    // Collect notes
+    const notesEl = document.getElementById('reportNotes');
+    const notes = notesEl ? notesEl.value.trim() : '';
+
+    const payload = { userName: name, userEmail, managerEmail, tasks, progress, template, notes, extraEmails };
 
     try {
       let sent = false;
@@ -966,6 +1037,8 @@
           tasks: JSON.stringify(payload.tasks),
           progress: JSON.stringify(payload.progress),
           template: payload.template || 'standard',
+          notes: payload.notes || '',
+          extraEmails: JSON.stringify(payload.extraEmails || []),
         });
 
         await fetch(APPS_SCRIPT_URL, {
@@ -986,8 +1059,9 @@
       overlay.classList.remove('show');
 
       // Show success
+      const allRecipients = [managerEmail, ...extraEmails].join(', ');
       document.getElementById('successMsg').textContent =
-        `Your weekly update is on its way to ${managerEmail}.${userEmail ? ' A copy was sent to you too.' : ''}`;
+        `Your weekly update is on its way to ${allRecipients}.${userEmail ? ' A copy was sent to you too.' : ''}`;
 
       // Pre-fill "send another" link
       const baseUrl = window.location.origin + window.location.pathname;
