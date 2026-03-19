@@ -224,11 +224,24 @@ function handlePayPalIPN(params) {
       console.log(`Pro activated for: ${userEmail} (PayPal: ${payerEmail})`);
     }
 
-    // Handle cancellations
-    if (txnType === 'subscr_cancel' || txnType === 'subscr_eot') {
+    // Handle cancellations, failures, and expiry
+    if (['subscr_cancel', 'subscr_eot', 'subscr_failed'].includes(txnType)) {
       const customEmail = (params['custom'] || '').toLowerCase().trim();
       const userEmail = customEmail || (params['payer_email'] || '').toLowerCase().trim();
-      if (userEmail) revokeProAccess(userEmail);
+      if (userEmail) {
+        revokeProAccess(userEmail);
+        console.log(`Pro revoked for: ${userEmail} (reason: ${txnType})`);
+      }
+    }
+
+    // Handle failed payment on existing subscription
+    if (txnType === 'subscr_payment' && status !== 'Completed') {
+      const customEmail = (params['custom'] || '').toLowerCase().trim();
+      const userEmail = customEmail || payerEmail;
+      if (userEmail) {
+        revokeProAccess(userEmail);
+        console.log(`Pro revoked — payment failed for: ${userEmail}`);
+      }
     }
 
   } catch (err) {
@@ -677,8 +690,13 @@ function isProUser(userEmail) {
     const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
     const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_PRO_USERS);
     if (!sheet) return false;
-    const emails = sheet.getRange(2, 1, Math.max(sheet.getLastRow() - 1, 1), 1).getValues().flat();
-    return emails.map(e => (e || '').toString().toLowerCase()).includes(userEmail.toLowerCase());
+    const data = sheet.getRange(2, 1, Math.max(sheet.getLastRow() - 1, 1), 4).getValues();
+    const email = userEmail.toLowerCase();
+    return data.some(row => {
+      const rowEmail = (row[0] || '').toString().toLowerCase();
+      const rowStatus = (row[3] || '').toString().toLowerCase();
+      return rowEmail === email && rowStatus === 'active';
+    });
   } catch (err) {
     return false;
   }
