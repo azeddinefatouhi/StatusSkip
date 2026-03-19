@@ -1200,19 +1200,14 @@
         notes,
         nextWeekPlan: nextWeekPlan || ''
       };
-      const bookmarkHint = document.getElementById('proBookmarkHint');
-      const bookmarkLink = document.getElementById('proBookmarkLink');
-      if (bookmarkHint && bookmarkLink && userIsPro) {
-        bookmarkLink.onclick = (e) => {
-          e.preventDefault();
-          const link = generateBookmarkLink();
-          navigator.clipboard.writeText(link).then(() => {
-            bookmarkLink.textContent = 'Copied!';
-            setTimeout(() => { bookmarkLink.textContent = 'Copy your Pro bookmark link'; }, 2000);
-          }).catch(() => { prompt('Copy this link:', link); });
-        };
-        bookmarkHint.style.display = 'block';
-      }
+      // Show Pro success actions (Download PDF + Copy link)
+      const proSuccessDiv = document.getElementById('proSuccessActions');
+      if (proSuccessDiv) proSuccessDiv.style.display = userIsPro ? 'flex' : 'none';
+
+      // Build bookmark URL
+      const baseUrl2 = window.location.origin + window.location.pathname;
+      bookmarkURL = `${baseUrl2}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(name)}&manager=${encodeURIComponent(managerEmail)}`;
+
       document.getElementById('successScreen').classList.add('show');
 
     } catch (err) {
