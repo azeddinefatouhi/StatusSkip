@@ -25,26 +25,28 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     h1 { font-family: 'Instrument Serif', serif; font-size: clamp(36px, 6vw, 64px); font-weight: 400; color: var(--text); line-height: 1.05; margin-bottom: 16px; }
     h1 em { font-style: italic; color: var(--accent); }
-    .sub { font-size: 17px; color: var(--text2); max-width: 440px; font-weight: 300; line-height: 1.7; margin-bottom: 48px; }
-    /* Steps */
+    .sub { font-size: 17px; color: var(--text2); max-width: 440px; font-weight: 300; line-height: 1.7; margin-bottom: 40px; }
+    .notice { max-width: 540px; background: var(--bg2); border: 1px solid rgba(212,245,100,0.15); border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; text-align: left; }
+    .notice-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 8px; letter-spacing: .5px; text-transform: uppercase; }
+    .notice-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
+    .notice-body a { color: var(--accent); text-decoration: none; }
     .steps-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 680px; width: 100%; margin-bottom: 48px; }
     .step-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; text-align: left; }
     .step-num { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--border2); line-height: 1; margin-bottom: 12px; }
     .step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
     .step-desc { font-size: 13px; color: var(--text3); line-height: 1.5; }
-    /* CTA */
+    /* Pro features list */
+    .features-wrap { max-width: 540px; width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px 28px; margin-bottom: 40px; text-align: left; }
+    .features-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+    .feature-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text2); }
+    .feature-item:last-child { border-bottom: none; }
+    .feature-item svg { flex-shrink: 0; color: var(--accent); }
     .cta-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #0c0c0f; font-weight: 700; font-size: 15px; padding: 15px 36px; border-radius: 12px; text-decoration: none; transition: background .15s, transform .15s; }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
-    .btn-primary svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     .support-note { font-size: 13px; color: var(--text3); }
     .support-note a { color: var(--text2); text-decoration: none; transition: color .2s; }
     .support-note a:hover { color: var(--text); }
-    /* Manual activation notice */
-    .notice { max-width: 540px; background: var(--bg2); border: 1px solid rgba(212,245,100,0.15); border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; text-align: left; }
-    .notice-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 8px; letter-spacing: .5px; text-transform: uppercase; }
-    .notice-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
-    .notice-body a { color: var(--accent); text-decoration: none; }
     footer { border-top: 1px solid var(--border); padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
     .footer-logo { font-family: 'Instrument Serif', serif; font-size: 17px; color: var(--text3); text-decoration: none; }
     .footer-links { display: flex; gap: 24px; }
@@ -71,12 +73,12 @@
 <main>
   <div class="badge"><span class="badge-dot"></span>Pro activated</div>
   <h1>You're in.<br><em>Welcome to Pro.</em></h1>
-  <p class="sub">Your payment was received. You now have unlimited reports, all templates, and weekly reminders. Here's how to get started.</p>
+  <p class="sub">Your payment was received. You now have access to all Pro features — no limits, no branding, all templates.</p>
 
   <div class="notice">
     <div class="notice-title">Activation is automatic</div>
     <div class="notice-body">
-      Your Pro access is activated automatically within a few minutes of payment. Use the same email you entered before paying. If you don't have access after 10 minutes, email <a href="mailto:azeddinefatouhi1991@gmail.com" style="color:var(--accent);text-decoration:none;">azeddinefatouhi1991@gmail.com</a> and we'll sort it immediately.
+      Your Pro access is activated automatically within a few minutes of payment. Use the same email you entered before paying. If you don't have Pro access after 10 minutes, <a href="contact.html">contact us</a> and we'll sort it immediately.
     </div>
   </div>
 
@@ -84,19 +86,67 @@
     <div class="step-card">
       <div class="step-num">01</div>
       <div class="step-title">Payment confirmed</div>
-      <div class="step-desc">Send your StatusSkip email to <a href="mailto:azeddinefatouhi1991@gmail.com" style="color:var(--accent);text-decoration:none;">azeddinefatouhi1991@gmail.com</a> so we can activate your Pro access.</div>
+      <div class="step-desc">PayPal notifies StatusSkip automatically. Your email is linked to your Pro account within minutes.</div>
     </div>
     <div class="step-card">
       <div class="step-num">02</div>
-      <div class="step-title">Pro access granted</div>
-      <div class="step-desc">No action needed. Open the app and your Pro features are unlocked automatically.</div>
+      <div class="step-title">Open the app</div>
+      <div class="step-desc">Go to the app and type the email you used when paying. Your Pro features unlock automatically.</div>
     </div>
     <div class="step-card">
       <div class="step-num">03</div>
-      <div class="step-title">Send unlimited reports</div>
-      <div class="step-desc">Open the app, send as many reports as you need. No weekly limit, all templates available.</div>
+      <div class="step-title">Send your report</div>
+      <div class="step-desc">All templates available, no StatusSkip footer, multiple managers — everything is unlocked.</div>
+    </div>
+  </div>
+
+  <!-- What's included -->
+  <div class="features-wrap">
+    <div class="features-title">What's included in Pro</div>
+    <div class="feature-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      No "Sent via StatusSkip" footer — looks 100% yours
+    </div>
+    <div class="feature-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      All 3 templates — Standard, Executive, Freelancer
+    </div>
+    <div class="feature-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Send to multiple managers or clients at once
+    </div>
+    <div class="feature-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Weekly reminder emails every Friday
+    </div>
+    <div class="feature-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Notes &amp; blockers section in every report
+    </div>
+    <div class="feature-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Unlimited reports — send as many as you need
     </div>
   </div>
 
   <div class="cta-wrap">
-    <a href="app.html" class="b
+    <a href="app.html" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Open StatusSkip Pro
+    </a>
+    <p class="support-note">Need help? <a href="contact.html">Contact support →</a></p>
+  </div>
+</main>
+
+<footer>
+  <a class="footer-logo" href="index.html">StatusSkip</a>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="footer-copy">&copy; 2026 StatusSkip</div>
+</footer>
+
+</body>
+</html>
